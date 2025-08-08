@@ -23,17 +23,17 @@ CProjectsDocument::~CProjectsDocument()
 //Methods
 // ----------------
 
-CProjectsTypedPtrArray& CProjectsDocument::GetAllProjects()
+CProjectsViewItemTypedPtrArray& CProjectsDocument::GetAllProjects()
 {
-	if (m_oProjectsArray.IsEmpty())
+	if (m_oProjectsViewItemArray.IsEmpty())
 	{
 		CProjectsAppService oProjectsAppService;
-		if (!oProjectsAppService.GetAllProjects(m_oProjectsArray))
+		if (!oProjectsAppService.GetAllProjects(m_oProjectsViewItemArray))
 		{
 			TRACE(_T("Failed to retrieve projects from the database.\n"));
-			return m_oProjectsArray;
+			return m_oProjectsViewItemArray;
 		}
-		return m_oProjectsArray;
+		return m_oProjectsViewItemArray;
 	};
 };
 

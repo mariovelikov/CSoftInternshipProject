@@ -32,7 +32,7 @@ public:/*
 	void CProjectsView::OnProjectDelete();
 	void CProjectsView::OnProjectDetails();*/
 
-	void InsertDataInCtrl(const PROJECTS* pProject, int nItemIndex, ViewActions eAction = ViewUpdate);
+	void InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nItemIndex, ViewActions eAction = ViewUpdate);
 public:
 	CProjectsDocument* GetDocument() const;
 

@@ -53,15 +53,16 @@ void CProjectsView::OnInitialUpdate()
 	oListCtrl.InsertColumn(0, _T("ID"), LVCFMT_LEFT, 50);
 	oListCtrl.InsertColumn(1, _T("Project Name"), LVCFMT_LEFT, 150);
 	oListCtrl.InsertColumn(2, _T("Description"), LVCFMT_LEFT, 200);
+	oListCtrl.InsertColumn(3, _T("Project Manager"), LVCFMT_LEFT, 200);
 
 	// Load initial data
-	CProjectsTypedPtrArray& oProjectsArray = GetDocument()->GetAllProjects();
+	CProjectsViewItemTypedPtrArray& oProjectsArray = GetDocument()->GetAllProjects();
 	//USERS* pCurrentUser = GetDocument()->();
 
 	for (int i = 0; i < oProjectsArray.GetCount(); i++) {
-		PROJECTS* pProject = oProjectsArray.GetAt(i);
+		PROJECTS_VIEW_ITEM* pProjectItem = oProjectsArray.GetAt(i);
 
-		InsertDataInCtrl(pProject, i, ViewAdd);
+		InsertDataInCtrl(pProjectItem, i, ViewAdd);
 	}
 }
 
@@ -72,17 +73,18 @@ CProjectsDocument* CProjectsView::GetDocument() const
 }
 
 
-void CProjectsView::InsertDataInCtrl(const PROJECTS* pProject, int nItemIndex, ViewActions eAction)
+void CProjectsView::InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nItemIndex, ViewActions eAction)
 {
 	CListCtrl& oListCtrl = GetListCtrl();
 
 	if (eAction == ViewAdd) {
 		CString strId;
-		strId.Format(_T("%d"), pProject->lId);
+		strId.Format(_T("%d"), pProject->recProject.lId);
 		nItemIndex = oListCtrl.InsertItem(nItemIndex, strId);
 	}
 
-	oListCtrl.SetItemText(nItemIndex, 1, pProject->szName);
-	oListCtrl.SetItemText(nItemIndex, 2, pProject->szDescription);
+	oListCtrl.SetItemText(nItemIndex, 1, pProject->recProject.szName);
+	oListCtrl.SetItemText(nItemIndex, 2, pProject->recProject.szDescription);
+	oListCtrl.SetItemText(nItemIndex, 3, pProject->szProjectManagerName);
 	oListCtrl.SetItemData(nItemIndex, (DWORD_PTR)pProject);
 };

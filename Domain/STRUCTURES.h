@@ -115,11 +115,21 @@ struct TASKS
 	}
 };
 
-
-struct PROECTS_VIEW_ITEM
+/// <summary> Represents a view item containing project information and the project manager's name. </summary>
+struct PROJECTS_VIEW_ITEM
 {
+	/// <summary> A variable that stores a project record. </summary>
 	PROJECTS recProject;
-	TCHAR szProjectManagerName;
+
+	/// <summary> Project manager's name associated with the project. </summary>
+	TCHAR szProjectManagerName[NAME_LENGTH];
+
+	// Constructor 
+	// ----------------
+	PROJECTS_VIEW_ITEM()
+	{
+		SecureZeroMemory(this, sizeof(*this));
+	}
 };
 
 template <typename T> 
@@ -149,7 +159,7 @@ private:
 typedef CStructTypedPtrArray<USERS> CUsersTypedPtrArray;
 typedef CStructTypedPtrArray<PROJECTS> CProjectsTypedPtrArray;
 typedef CStructTypedPtrArray<TASKS> CTasksTypedPtrArray;
-typedef CStructTypedPtrArray<PROECTS_VIEW_ITEM> CProjectsViewItemsTypedPtrArray;
+typedef CStructTypedPtrArray<PROJECTS_VIEW_ITEM> CProjectsViewItemTypedPtrArray;
 
 struct PROJECT_DETAILS
 {

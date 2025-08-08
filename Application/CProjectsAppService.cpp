@@ -6,7 +6,7 @@
 #include "STRUCTURES.h"
 
 
-bool CProjectsAppService::GetAllProjects(CProjectsViewItemsTypedPtrArray& oProjectsViewItemsArray) const
+bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjectsViewItemArray) const
 {
 	CProjectsTable oProjetsTable;
 	CUsersTable oUsersTable;
@@ -30,9 +30,10 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemsTypedPtrArray& oProje
 		{
 			continue;
 		}
-		PROECTS_VIEW_ITEM* pViewItem = new PROECTS_VIEW_ITEM();
+		PROJECTS_VIEW_ITEM* pViewItem = new PROJECTS_VIEW_ITEM();
 
 		pViewItem->recProject = *pProject;
+
 		for (int j = 0; j < oUsersTypedPtrArray.GetCount(); j++)
 		{
 			USERS* pUser = oUsersTypedPtrArray.GetAt(j);
@@ -40,13 +41,14 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemsTypedPtrArray& oProje
 			{
 				continue;
 			}
+
 			if (pUser->lId == pProject->lId)
 			{
-				//pViewItem->szProjectManagerName = pUser->szName;
+				_tcscpy_s(pViewItem->szProjectManagerName, (sizeof(pViewItem->szProjectManagerName) / sizeof(pViewItem->szProjectManagerName[0])), pUser->szName);
 				break;
 			}
 		}
-		oProjectsViewItemsArray.Add(pViewItem);
+		oProjectsViewItemArray.Add(pViewItem);
 	}
 
 	return true;

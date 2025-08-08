@@ -20,7 +20,7 @@ public:
 // ----------------
 public:
 
-	CProjectsTypedPtrArray& GetAllProjects();
+	CProjectsViewItemTypedPtrArray& GetAllProjects();
 	bool AddProject(PROJECTS& oRecProject);
 	bool UpdateProject(PROJECTS& oRecProject);
 	bool DeleteProject(const long lId);
@@ -33,6 +33,7 @@ public:
 	// Members
 	// ----------------
 private:
+	CProjectsViewItemTypedPtrArray m_oProjectsViewItemArray;
 	CProjectsTypedPtrArray m_oProjectsArray;
 };
 

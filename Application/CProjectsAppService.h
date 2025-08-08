@@ -5,7 +5,7 @@
 class ApplicationDLL_EXP CProjectsAppService
 {
 public:
-	bool GetAllProjects(CProjectsViewItemsTypedPtrArray& oProjectsTypedPtrArray) const;
+	bool GetAllProjects(CProjectsViewItemTypedPtrArray& oProjectsViewItemTypedPtrArray) const;
 	bool AddProject(PROJECTS& oRecord) const; // PROJECT_DETAILS
 	bool UpdateProject(PROJECTS& oRecord) const; // PROJECT_DETAILS
 	bool DeleteProject(const long lID) const;
