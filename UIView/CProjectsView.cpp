@@ -98,14 +98,19 @@ void CProjectsView::InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nIt
 void CProjectsView::OnProjectAdd()
 {
 	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
-	CProjectsDialog oProjectsDialog(oUsersArray);
+	PROJECTS oProject;
+	CTasksTypedPtrArray oTasksArray;
+
+	CProjectsDialog oProjectsDialog(oUsersArray, oProject, oTasksArray);
 	if (oProjectsDialog.DoModal() == IDOK)
 	{
 	}
 	else
 	{
-		//AfxMessageBox(_T("No project was added."));
+		AfxMessageBox(_T("No project was added."));
 	}
+
+	return;
 }
 
 
