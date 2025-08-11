@@ -107,7 +107,11 @@ bool CTasksDialog::ValidateData()
 void CTasksDialog::FillTaskData()
 {
 	// Fill the TASKS structure with data from the dialog controls
-	m_oTask.lUserId = (long)m_oUsersComboBox.GetItemData(m_oUsersComboBox.GetCurSel());
+	int nSelected = m_oUsersComboBox.GetCurSel();
+	if (nSelected != CB_ERR) {
+		m_oTask.lUserId = static_cast<long>(m_oUsersComboBox.GetItemData(nSelected));
+	}
+	
 	m_oTask.nState = (int)m_oStateComboBox.GetItemData(m_oStateComboBox.GetCurSel());
 	m_oTask.nTotalEffort = (int)m_oTotalEffortComboBox.GetItemData(m_oTotalEffortComboBox.GetCurSel());
 	_tcscpy_s(m_oTask.szName, TASKS_NAME_LENGTH, m_strName);
@@ -127,7 +131,8 @@ void CTasksDialog::FillComboBoxes()
 		USERS* pUser = m_oUsersArray[i];
 		int index = m_oUsersComboBox.AddString(pUser->szName);
 		m_oUsersComboBox.SetItemData(index, (DWORD_PTR)pUser->lId);
-	};
+	}
+	m_oUsersComboBox.SetCurSel(0);
 
 	//fill the list control with State
 	int index = m_oStateComboBox.AddString(_T("Pending"));
@@ -154,4 +159,5 @@ void CTasksDialog::FillComboBoxes()
 	index = m_oTotalEffortComboBox.AddString(_T("High"));
 	m_oTotalEffortComboBox.SetItemData(index, TotalEffortHigh);
 
+	m_oStateComboBox.SetCurSel(0);
 }

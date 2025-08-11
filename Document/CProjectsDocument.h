@@ -22,7 +22,7 @@ public:
 
 	CProjectsViewItemTypedPtrArray& GetAllProjects();
 	CUsersTypedPtrArray& GetAllUsers();
-	bool AddProject(PROJECTS& oRecProject);
+	bool AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& oTasks);
 	bool UpdateProject(PROJECTS& oRecProject);
 	bool DeleteProject(const long lId);
 

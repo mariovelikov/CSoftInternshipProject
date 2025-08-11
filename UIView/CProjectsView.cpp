@@ -104,14 +104,27 @@ void CProjectsView::OnProjectAdd()
 	CProjectsDialog oProjectsDialog(oUsersArray, oProject, oTasksArray);
 	if (oProjectsDialog.DoModal() == IDOK)
 	{
-		//GetDocument()->AddProject(oProject);
+		if (GetDocument()->AddProject(oProject, oTasksArray))
+		{
+			GetDocument()->GetAllProjects();
+		}
+		else
+		{
+			AfxMessageBox(_T("Failed to add the project. Please check the input data or try again."));
+		}
 	}
 	else
 	{
 		AfxMessageBox(_T("No project was added."));
 	}
 
-	return;
+	// Clear users array
+	for (int i = 0; i < oUsersArray.GetCount(); i++)
+	{
+		delete oUsersArray[i];
+	}
+
+	oUsersArray.RemoveAll();
 }
 
 

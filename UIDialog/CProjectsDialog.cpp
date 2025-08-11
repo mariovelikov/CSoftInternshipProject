@@ -8,7 +8,6 @@
 #include "Resource.h"
 #include "STRUCTURES.h"
 
-
 #define ID_ADD_TASK 1001
 
 #define TASKS_ID_COLUMN 0
@@ -32,7 +31,6 @@ IMPLEMENT_DYNAMIC(CProjectsDialog, CDialogEx)
 CProjectsDialog::CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECTS& oProject, CTasksTypedPtrArray& oTasksArray, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_EDB_PROJECTS_DIALOG, pParent), m_oUsersArray(oUsersArray), m_oProject(oProject), m_oTasksArray(oTasksArray)
 {
-
 }
 
 CProjectsDialog::~CProjectsDialog()
@@ -42,7 +40,7 @@ CProjectsDialog::~CProjectsDialog()
 void CProjectsDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_CMB_USERS, m_oProjectManagerComboBox);
+	DDX_Control(pDX, IDC_CMB_USERS, m_oUsersComboBox);
 	DDX_Control(pDX, IDC_LSC_TASKS, m_oListTasks);
 	DDX_Text(pDX, IDC_EDB_PROJECTS_NAME, m_strName);
 	DDX_Text(pDX, IDC_EDB_PROJECTS_DESCRIPTION, m_strDescription);
@@ -87,13 +85,26 @@ BOOL CProjectsDialog::OnInitDialog()
 
 	m_oListTasks.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
+	m_oUsersComboBox.ModifyStyle(CBS_SORT, 0);
+
+	// fil the combo box with users
 	for (int i = 0; i < m_oUsersArray.GetCount(); i++)
 	{
-		USERS* pUser = m_oUsersArray.GetAt(i);
+		if (m_oUsersArray[i] == nullptr)
+			continue;
 
-		int index = m_oProjectManagerComboBox.AddString(pUser->szName);
-		m_oProjectManagerComboBox.SetItemData(index, (DWORD_PTR)pUser->lId);
+		USERS* pUser = m_oUsersArray[i];
+
+		int nIndex = m_oUsersComboBox.AddString(pUser->szName);
+		if (nIndex != CB_ERR)
+		{
+			m_oUsersComboBox.SetItemData(nIndex, static_cast<DWORD_PTR>(pUser->lId));
+		}
 	}
+
+	if (m_oUsersComboBox.GetCount() > 0)
+		m_oUsersComboBox.SetCurSel(0);
+
 	return TRUE;
 }
 
@@ -141,7 +152,11 @@ void CProjectsDialog::OnBnClickedOk()
 
 void CProjectsDialog::FillProjectData()
 {
-	m_oProject.lProjectManagerId = (int)m_oProjectManagerComboBox.GetCurSel();
+	int nSelected = m_oUsersComboBox.GetCurSel();
+	if (nSelected != CB_ERR) {
+		m_oProject.lProjectManagerId = static_cast<long>(m_oUsersComboBox.GetItemData(nSelected));
+	}
+
 	_tcscpy_s(m_oProject.szName, PROJECTS_NAME_LENGTH, m_strName);
 	_tcscpy_s(m_oProject.szDescription, PROJECTS_DESCRIPTION_LENGTH, m_strDescription);
 }
@@ -196,7 +211,7 @@ bool CProjectsDialog::ValidateData()
 		strErrorMessage += _T("\nPlease enter a description for the project.");
 		bValid = false;
 	}
-	if (m_oProjectManagerComboBox.GetCurSel() == CB_ERR)
+	if (m_oUsersComboBox.GetCurSel() == CB_ERR)
 	{
 		strErrorMessage += _T("\nPlease select a project manager.");
 		bValid = false;

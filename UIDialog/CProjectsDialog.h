@@ -65,7 +65,7 @@ protected:
 	CListCtrl m_oListTasks;
 	CUsersTypedPtrArray& m_oUsersArray;
 
-	CComboBox m_oProjectManagerComboBox;
+	CComboBox m_oUsersComboBox;
 	CString m_strName;
 	CString m_strDescription;
 

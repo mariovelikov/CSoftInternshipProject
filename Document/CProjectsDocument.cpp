@@ -38,10 +38,10 @@ CProjectsViewItemTypedPtrArray& CProjectsDocument::GetAllProjects()
 	};
 };
 
-bool CProjectsDocument::AddProject(PROJECTS& oRecProject)
+bool CProjectsDocument::AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& oTasks)
 {
 	CProjectsAppService oProjectsAppService;
-	if (!oProjectsAppService.AddProject(oRecProject))
+	if (!oProjectsAppService.AddProject(oRecProject, oTasks))
 	{
 		return false;
 	}

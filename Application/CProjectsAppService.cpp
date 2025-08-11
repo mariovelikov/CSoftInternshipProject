@@ -19,10 +19,14 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjec
 		return false;
 	}
 
+	if (FAILED(hResult))
+	{
+		oSession.Close();
+		return false;
+	}
+
 	CProjectsTable oProjetsTable(oSession);
 	CUsersTable oUsersTable(oSession);
-
-	// CREATE A SESSION
 
 	CUsersTypedPtrArray oUsersTypedPtrArray;
 	if (!oUsersTable.SelectAll(oUsersTypedPtrArray))
@@ -70,7 +74,7 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjec
 	return true;
 };
 
-bool CProjectsAppService::AddProject(PROJECTS& oRecord) const
+bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTasksArray) const
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
@@ -78,31 +82,41 @@ bool CProjectsAppService::AddProject(PROJECTS& oRecord) const
 
 	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
+		CString errorMessage;
+		errorMessage.Format(_T("Open session failed. HRESULT: %d"), hResult);
+		TRACE(errorMessage);
 
 		oSession.Close();
 		return false;
 	}
 
+	oSession.StartTransaction();
 	CProjectsTable oProjetsTable(oSession);
 	CTasksTable oTasksTable(oSession);
-
-	// START TRANSACTION
 
 	// FIRST WE ADD PROJECT
 	if (!oProjetsTable.Insert(oRecord))
 	{
+		oSession.Abort();
 		oSession.Close();
 		return false;
 	}
+
+	// LOOP ALL TASKS AND ADD TO PROJECT
+	for (int i = 0; i < oTasksArray.GetCount(); i++) {
+		oTasksArray[i]->lProjectId = oRecord.lId;
+		if (!oTasksTable.Insert(*oTasksArray.GetAt(i)))
+		{
+			oSession.Abort();
+			oSession.Close();
+			return false;
+		};
+	}
+
+	oSession.Commit();
 	oSession.Close();
 	return true;
 	
-	// LOOP ALL TASKS AND ADD TO PROJECT
-	/*for (int i = 0; i < oTasksArray.GetCount(); i++) {
-		oTasksTable.Insert(*oTasksArray.GetAt(i));
-	}*/
-
 };
 
 bool CProjectsAppService::UpdateProject(PROJECTS& oRecord) const // 
