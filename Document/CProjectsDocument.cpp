@@ -48,7 +48,21 @@ bool CProjectsDocument::AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& o
 
 	PROJECTS* pProject = new PROJECTS(oRecProject);
 	m_oProjectsArray.Add(pProject);
-	UpdateAllViews(nullptr, (LPARAM)ViewAdd, (CObject*)pProject);
+	
+	PROJECTS_VIEW_ITEM* pViewItem = new PROJECTS_VIEW_ITEM();
+	pViewItem->recProject = *pProject;
+
+	// Set Project Manager name to view item
+	for (int i = 0; i < m_oUsersArray.GetCount(); i++)
+	{
+		if (m_oUsersArray[i]->lId == pProject->lProjectManagerId)
+		{
+			_tcscpy_s(pViewItem->szProjectManagerName, (sizeof(pViewItem->szProjectManagerName) / sizeof(pViewItem->szProjectManagerName[0])), m_oUsersArray[i]->szName);
+		}
+	}
+
+	m_oProjectsViewItemArray.Add(pViewItem);
+	UpdateAllViews(nullptr, (LPARAM)ViewAdd, (CObject*)pViewItem);
 
 	return true;
 }

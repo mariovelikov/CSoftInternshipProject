@@ -28,10 +28,12 @@ public:
 	// ----------------
 public:
 	void CProjectsView::OnProjectAdd();
+	//void CProjectsView::OnProjectDetails();
+
 	/*
 	void CProjectsView::OnProjectUpdate();
 	void CProjectsView::OnProjectDelete();
-	void CProjectsView::OnProjectDetails();*/
+	*/
 
 	void InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nItemIndex, ViewActions eAction = ViewUpdate);
 public:
@@ -41,7 +43,7 @@ public:
 	// ----------------
 protected:
 	virtual void OnInitialUpdate();
-	//virtual void OnUpdate(CView* /* pSender */, LPARAM /* lHint */, CObject* /* pHint */);
+	virtual void OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/);
 
 #ifdef _DEBUG
 	virtual void AssertValid() const;

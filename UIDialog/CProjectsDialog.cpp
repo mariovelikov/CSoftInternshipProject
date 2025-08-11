@@ -117,7 +117,6 @@ void CProjectsDialog::OnAddTask()
 	if (oTasksDialog.DoModal() == IDOK)
 	{
 		VisualizeTask(oTask);
-
 		m_oTasksArray.Add(new TASKS(oTask));
 	}
 	else

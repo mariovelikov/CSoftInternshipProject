@@ -61,7 +61,7 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjec
 				continue;
 			}
 
-			if (pUser->lId == pProject->lId)
+			if (pUser->lId == pProject->lProjectManagerId)
 			{
 				_tcscpy_s(pViewItem->szProjectManagerName, (sizeof(pViewItem->szProjectManagerName) / sizeof(pViewItem->szProjectManagerName[0])), pUser->szName);
 				break;

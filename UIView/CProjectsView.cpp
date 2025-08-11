@@ -115,7 +115,18 @@ void CProjectsView::OnProjectAdd()
 	}
 	else
 	{
-		AfxMessageBox(_T("No project was added."));
+		int result = AfxMessageBox(
+			_T("Are you sure you want to cancel? Unsaved changes will be lost."),
+			MB_YESNO | MB_ICONQUESTION
+		);
+
+		if (result == IDYES)
+		{
+			return;
+		}
+		else {
+			OnProjectAdd();
+		}
 	}
 
 	// Clear users array
@@ -155,4 +166,48 @@ void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 
 	*pResult = 0;
+}
+
+void CProjectsView::OnUpdate(CView* /*pSender*/, LPARAM lHint, CObject* pHint)
+{
+	switch ((ViewActions)lHint)
+	{
+	case ViewAdd:
+	{
+		PROJECTS_VIEW_ITEM* pViewItem = (PROJECTS_VIEW_ITEM*)pHint;
+		CListCtrl& oListCtrl = GetListCtrl();
+		int nItemIndex = oListCtrl.GetItemCount();
+
+		InsertDataInCtrl(pViewItem, nItemIndex, ViewAdd);
+		break;
+	}
+
+	/*case ViewUpdate:
+	{
+		USERS* pUser = (USERS*)pHint;
+		CListCtrl& oListCtrl = GetListCtrl();
+
+		int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
+		if (nSelectedItem != -1)
+		{
+			InsertDataInCtrl(pUser, nSelectedItem, ViewUpdate);
+		}
+		break;
+	}
+
+	case ViewDelete:
+	{
+		USERS* pUser = (USERS*)pHint;
+		CListCtrl& oListCtrl = GetListCtrl();
+
+		int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
+		if (nSelectedItem != -1)
+		{
+			oListCtrl.DeleteItem(nSelectedItem);
+		}
+		break;
+	}*/
+	default:
+		break;
+	}
 }
