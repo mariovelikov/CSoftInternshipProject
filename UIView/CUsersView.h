@@ -45,10 +45,10 @@ protected:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
+	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
 	// Members
 	// ----------------
-	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 public:
 	afx_msg void OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult);
 };

@@ -11,6 +11,8 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjec
 	CProjectsTable oProjetsTable;
 	CUsersTable oUsersTable;
 
+	// CREATE A SESSION
+
 	CUsersTypedPtrArray oUsersTypedPtrArray;
 	if (!oUsersTable.SelectAll(oUsersTypedPtrArray))
 	{

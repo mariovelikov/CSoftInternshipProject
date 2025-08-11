@@ -26,8 +26,9 @@ public:
 
 	// Methods
 	// ----------------
-public:/*
+public:
 	void CProjectsView::OnProjectAdd();
+	/*
 	void CProjectsView::OnProjectUpdate();
 	void CProjectsView::OnProjectDelete();
 	void CProjectsView::OnProjectDetails();*/
@@ -51,6 +52,7 @@ protected:
 public:
 	afx_msg void OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult);
 
+private:
 	// Members
 	// ----------------
 };

@@ -21,6 +21,7 @@ public:
 public:
 
 	CProjectsViewItemTypedPtrArray& GetAllProjects();
+	CUsersTypedPtrArray& GetAllUsers();
 	bool AddProject(PROJECTS& oRecProject);
 	bool UpdateProject(PROJECTS& oRecProject);
 	bool DeleteProject(const long lId);
@@ -35,5 +36,6 @@ public:
 private:
 	CProjectsViewItemTypedPtrArray m_oProjectsViewItemArray;
 	CProjectsTypedPtrArray m_oProjectsArray;
+	CUsersTypedPtrArray m_oUsersArray;
 };
 

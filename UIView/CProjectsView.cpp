@@ -4,13 +4,18 @@
 #include "STRUCTURES.h"
 #include <Resource.h>
 #include "ViewActions.h"
+#include "CProjectsDialog.h"
+#include "CUsersView.h"
 
 // Macros
 // ----------------
+#define ID_PROJECT_ADD 1001
+
 IMPLEMENT_DYNCREATE(CProjectsView, CListView)
 
 BEGIN_MESSAGE_MAP(CProjectsView, CListView)
-	//ON_NOTIFY_REFLECT(NM_RCLICK, &CProjectsView::OnNMRClick)
+	ON_NOTIFY_REFLECT(NM_RCLICK, &CProjectsView::OnNMRClick)
+	ON_COMMAND(ID_PROJECT_ADD, &CProjectsView::OnProjectAdd)
 END_MESSAGE_MAP()
 
 //Constructor / Destructor
@@ -57,7 +62,6 @@ void CProjectsView::OnInitialUpdate()
 
 	// Load initial data
 	CProjectsViewItemTypedPtrArray& oProjectsArray = GetDocument()->GetAllProjects();
-	//USERS* pCurrentUser = GetDocument()->();
 
 	for (int i = 0; i < oProjectsArray.GetCount(); i++) {
 		PROJECTS_VIEW_ITEM* pProjectItem = oProjectsArray.GetAt(i);
@@ -88,3 +92,48 @@ void CProjectsView::InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nIt
 	oListCtrl.SetItemText(nItemIndex, 3, pProject->szProjectManagerName);
 	oListCtrl.SetItemData(nItemIndex, (DWORD_PTR)pProject);
 };
+
+
+// MFC Message Handlers
+void CProjectsView::OnProjectAdd()
+{
+	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
+	CProjectsDialog oProjectsDialog(oUsersArray);
+	if (oProjectsDialog.DoModal() == IDOK)
+	{
+	}
+	else
+	{
+		//AfxMessageBox(_T("No project was added."));
+	}
+}
+
+
+void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	CPoint oPoint;
+	GetCursorPos(&oPoint);
+	CMenu oContextMenu;
+	oContextMenu.CreatePopupMenu();
+	CListCtrl& oListCtrl = GetListCtrl();
+
+	int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
+	if (nSelectedItem == -1)
+	{
+		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_ADD, _T("Add Project"));
+	}
+	else 
+	{/*
+		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_UPDATE, _T("Update Project"));
+		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DELETE, _T("Delete Project"));
+		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_VIEW, _T("View Project"));*/
+	}
+
+	oContextMenu.TrackPopupMenu(
+		TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+		oPoint.x, oPoint.y, this);
+
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+
+	*pResult = 0;
+}

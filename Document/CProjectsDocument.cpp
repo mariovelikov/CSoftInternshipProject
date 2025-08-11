@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CProjectsDocument.h"
 #include "CProjectsAppService.h"
+#include "CUsersAppService.h"
 #include "ViewActions.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -90,6 +91,20 @@ bool CProjectsDocument::DeleteProject(const long lId)
 		}
 	}
 	return false;
+}
+
+CUsersTypedPtrArray& CProjectsDocument::GetAllUsers()
+{
+	if (m_oUsersArray.IsEmpty())
+	{
+		CUsersAppService oProjectsAppService;
+		if (!oProjectsAppService.GetAllUsers(m_oUsersArray))
+		{
+			TRACE(_T("Failed to retrieve users from the database.\n"));
+			return m_oUsersArray;
+		}
+		return m_oUsersArray;
+	};
 }
 
 // Overrides
