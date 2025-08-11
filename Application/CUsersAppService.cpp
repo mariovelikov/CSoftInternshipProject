@@ -5,42 +5,99 @@
 
 bool CUsersAppService::GetAllUsers(CUsersTypedPtrArray& oUserTypedPtrArray) const
 {
-	CUsersTable	oUsersTable;
+	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
+	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CSession oSession;
+
+	HRESULT hResult = oSession.Open(oDataSource);
+	if (FAILED(hResult)) {
+		//PrintError(hResult, _T("Open session failed"));
+
+		return false;
+	}
+
+	CUsersTable	oUsersTable(oSession);
 
 	if (!oUsersTable.SelectAll(oUserTypedPtrArray))
 	{
+		oSession.Close();
 		return false;
 	}
+
+	oSession.Close();
 	return true;
 }	
 
 bool CUsersAppService::AddUser(USERS& oRecUser) const
 {
-	CUsersTable oUsersTable;
-	if (!oUsersTable.Insert(oRecUser))
-	{
+	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
+	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CSession oSession;
+
+	HRESULT hResult = oSession.Open(oDataSource);
+	if (FAILED(hResult)) {
+		//PrintError(hResult, _T("Open session failed"));
+
 		return false;
 	}
+
+	CUsersTable oUsersTable(oSession);
+	if (!oUsersTable.Insert(oRecUser))
+	{
+		oSession.Close();
+		return false;
+	}
+
+	oSession.Close();
 	return true;
 }
 
 bool CUsersAppService::UpdateUser(USERS& oRecUser) const
 {
-	CUsersTable oUsersTable;
+	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
+	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CSession oSession;
+
+	HRESULT hResult = oSession.Open(oDataSource);
+	if (FAILED(hResult)) {
+		//PrintError(hResult, _T("Open session failed"));
+
+		return false;
+	}
+
+	CUsersTable oUsersTable(oSession);
 
 	if (!oUsersTable.UpdateWhereID(oRecUser.lId, oRecUser))
 	{
+		oSession.Close();
 		return false;
 	}
+
+	oSession.Close();
 	return true;
 }
 
 bool CUsersAppService::DeleteUser(const long lID) const
 {
-	CUsersTable oUsersTable;
-	if (!oUsersTable.DeleteWhereID(lID))
-	{
+	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
+	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CSession oSession;
+
+	HRESULT hResult = oSession.Open(oDataSource);
+	if (FAILED(hResult)) {
+		//PrintError(hResult, _T("Open session failed"));
+
 		return false;
 	}
+
+	CUsersTable oUsersTable(oSession);
+
+	if (!oUsersTable.DeleteWhereID(lID))
+	{
+		oSession.Close();
+		return false;
+	}
+
+	oSession.Close();
 	return true;
 }

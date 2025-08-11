@@ -104,6 +104,7 @@ void CProjectsView::OnProjectAdd()
 	CProjectsDialog oProjectsDialog(oUsersArray, oProject, oTasksArray);
 	if (oProjectsDialog.DoModal() == IDOK)
 	{
+		//GetDocument()->AddProject(oProject);
 	}
 	else
 	{

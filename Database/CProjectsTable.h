@@ -4,5 +4,5 @@
 class CProjectsTable : public CGenericTable<PROJECTS>
 {
 public:
-	CProjectsTable() : CGenericTable<PROJECTS>(_T("PROJECTS")) {};
+	CProjectsTable(CSession& oSession) : CGenericTable<PROJECTS>(_T("PROJECTS"), oSession) {};
 };
