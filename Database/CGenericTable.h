@@ -17,18 +17,6 @@ public:
 	CGenericTable(CString strTableName, CSession& oSession) : m_strTableName(strTableName), m_oSession(oSession){};
 	bool SelectAll(CStructTypedPtrArray<T>& oRecordsArray)
 	{
-		// Connect to the database
-		/*CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-		CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-		CSession oSession;
-
-		HRESULT hResult = oSession.Open(oDataSource);
-		if (FAILED(hResult))
-		{
-			PrintError(hResult, _T("Open session failed"));
-			return false;
-		}*/
-
 		// Create SQL query to select all users
 		CString strQuery;
 		strQuery.Format(_T("SELECT * FROM %s WITH(NOLOCK)"), m_strTableName);
@@ -40,7 +28,6 @@ public:
 			PrintError(hResult, _T("SQL query failed"));
 
 			m_oCommand.Close();
-			//m_oSession.Close();
 			return false;
 		}
 
@@ -53,30 +40,15 @@ public:
 
 		if (hResult != DB_S_ENDOFROWSET) {
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 
 		m_oCommand.Close();
-		//oSession.Close();
 		return true;
 	};
 
 	bool SelectWhereID(const long lID, T& oRecord)
 	{
-		// Connect to the database
-		/*CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-		CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-		CSession oSession;
-
-		HRESULT hResult = oSession.Open(oDataSource);
-		if (FAILED(hResult))
-		{
-			PrintError(hResult, _T("Open session failed"));
-			return false;
-		}
-		*/
-
 		// Construct the query
 		CString strQuery;
 		strQuery.Format(_T("SELECT * FROM %s WHERE ID = %ld"), m_strTableName,  lID);
@@ -92,40 +64,16 @@ public:
 		if (m_oCommand.MoveNext() == S_OK)
 		{
 			oRecord = m_oCommand.GetRec();
-			//oSession.Close();
 			m_oCommand.Close();
 			return true;
 		}
 
-		//oSession.Close();
 		m_oCommand.Close();
 		return false;
 	};
 	
 	bool UpdateWhereID(const long lID, T& oRecord)
 	{
-		// Connect to the database
-		/*CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-		CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-		CSession oSession;
-
-		HRESULT hResult = oSession.Open(oDataSource);
-		if (FAILED(hResult)) {
-			PrintError(hResult, _T("Open session failed"));
-
-			return false;
-		}
-
-		HRESULT hResult = oSession.StartTransaction();
-
-		if (FAILED(hResult))
-		{
-			oSession.Close();
-			PrintError(hResult, _T("Transaction failed"));
-			return false;
-		}
-		*/
-
 		CString strQuery;
 		strQuery.Format(_T("SELECT * FROM %s WITH(UPDLOCK) WHERE ID = %ld"),m_strTableName, lID);
 
@@ -135,7 +83,6 @@ public:
 		if (FAILED(hResult)) {
 			PrintError(hResult, _T("Open command failed"));
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 
@@ -144,7 +91,6 @@ public:
 		{
 			PrintError(hResult, _T("Error reading data"));
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 
@@ -152,7 +98,6 @@ public:
 			PrintError(hResult, _T("Error record update counter changed id"));
 
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 
@@ -168,45 +113,13 @@ public:
 			//oSession.Close();
 			return false;
 		}
-
-		//hResult = oSession.Commit();
-		//if (FAILED(hResult))
-		//{
-		//	PrintError(hResult, _T("Commit failed"));
-		//	m_oCommand.Close();
-		//	oSession.Close();
-
-		//	return false;
-		//}
-
+		
 		m_oCommand.Close();
-		//oSession.Close();
-
 		return true;
 	};
 
 	bool Insert(T& oRecord)
 	{
-		// Connect to the database
-		/*CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-		CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-		CSession oSession;
-
-		HRESULT	hResult = oSession.Open(oDataSource);
-		if (FAILED(hResult))
-		{
-			PrintError(hResult, _T("Open session failed"));
-			return false;
-		}
-
-		hResult = oSession.StartTransaction();
-		if (FAILED(hResult))
-		{
-			PrintError(hResult, _T("Transaction failed"));
-			oSession.Close();
-			return false;
-		}*/
-
 		// Prepare the command to insert a new user
 		CDBPropSet oInsertDBPropSet = GetDBPropSet();
 
@@ -220,8 +133,6 @@ public:
 			PrintError(hResult, _T("Command open failed"));
 
 			m_oCommand.Close();
-			//oSession.Close();
-
 			return false;
 		}
 
@@ -248,47 +159,12 @@ public:
 		}
 
 		oRecord.lId = m_oCommand.GetRec().lId;
-
-		//hResult = oSession.Commit();
-		//if (FAILED(hResult))
-		//{
-		//	m_oCommand.Close();
-		//	oSession.Close();
-
-		//	return false;
-		//}
-
 		m_oCommand.Close();
-		//oSession.Close();
 		return true;
 	};
 
 	bool DeleteWhereID(const long lID)
 	{
-		// Connect to the database
-		/*CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-		CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-		CSession oSession;
-
-		HRESULT	hResult = oSession.Open(oDataSource);
-		if (FAILED(hResult)) {
-			PrintError(hResult, _T("Open session failed"));
-
-			oSession.Close();
-			m_oCommand.Close();
-
-			return false;
-		}
-
-		hResult = oSession.StartTransaction();
-		if (FAILED(hResult)) {
-			PrintError(hResult, _T("Transaction failed"));
-
-			oSession.Close();
-			m_oCommand.Close();
-			return false;
-		}*/
-
 		CString strQuery;
 		strQuery.Format(_T("SELECT * FROM %s WHERE ID = %ld"), m_strTableName, lID);
 
@@ -297,8 +173,6 @@ public:
 		HRESULT hResult = m_oCommand.Open(m_oSession, strQuery, &oDeleteDBPropSet);
 		if (FAILED(hResult)) {
 			PrintError(hResult, _T("Transaction failed"));
-
-			//oSession.Close();
 			m_oCommand.Close();
 
 			return false;
@@ -309,7 +183,6 @@ public:
 			PrintError(hResult, _T("Error reading data or no User with this ID"));
 
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 
@@ -318,22 +191,10 @@ public:
 			PrintError(hResult, _T("Delete failed"));
 
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 		
-		//hResult = oSession.Commit();
-		//if (FAILED(hResult)) {
-		//	PrintError(hResult, _T("Commit failed"));
-
-		//	m_oCommand.Close();
-		//	oSession.Close();
-
-		//	return false;
-		//}
-
 		m_oCommand.Close();
-		//oSession.Close();
 		return true;
 	};
 
