@@ -28,7 +28,8 @@ private:
 	/// <returns></returns>
 	CString StateToString(StateEnum state);
 
-
+	/// <summary>Fill table with tasks</summary>
+	void FillTasksInTable();
 protected:
     afx_msg void OnListTasksRightClick(NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
@@ -36,11 +37,17 @@ protected:
 private:
 	//Methods
 	//----------------
+	
+	/// <summary>Add task</summary>
 	void OnAddTask();
 
-	/// <summary>
-	/// Validates the data entered in the dialog.
-	/// </summary>
+	/// <summary>Update task</summary>
+	void OnUpdateTask();
+
+	/// <summary>Delete task</summary>
+	void OnDeleteTask();
+
+	/// <summary> Validates the data entered in the dialog. </summary>
 	bool ValidateData();
 
 	void VisualizeTask(TASKS& oTask);

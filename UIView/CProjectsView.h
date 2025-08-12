@@ -30,10 +30,7 @@ public:
 	void CProjectsView::OnProjectAdd();
 	void CProjectsView::OnProjectDetails();
 	void CProjectsView::OnProjectDelete();
-
-	/*
 	void CProjectsView::OnProjectUpdate();
-	*/
 
 	void InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nItemIndex, ViewActions eAction = ViewUpdate);
 public:

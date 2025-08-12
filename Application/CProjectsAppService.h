@@ -8,6 +8,6 @@ public:
 	bool GetAllProjects(CProjectsViewItemTypedPtrArray& oProjectsViewItemTypedPtrArray) const;
 	bool GetProjectDetails(PROJECT_DETAILS& oProjectDetails) const;
 	bool AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTasksArray) const;
-	bool UpdateProject(PROJECTS& oRecord) const; // PROJECT_DETAILS
+	bool UpdateProject(PROJECT_DETAILS& oRecord, CTasksTypedPtrArray& oDeleteTasks) const;
 	bool DeleteProject(const PROJECT_DETAILS& oProjectDetails) const;
 };

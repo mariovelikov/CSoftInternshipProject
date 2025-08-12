@@ -9,16 +9,20 @@
 #include "STRUCTURES.h"
 
 #define ID_ADD_TASK 1001
+#define ID_UPDATE_TASK 1002
+#define ID_DELETE_TASK 1003
 
 #define TASKS_ID_COLUMN 0
 #define TASKS_NAME_COLUMN 1
 #define TASKS_DESCRIPTION_COLUMN 2
-#define TASKS_TOTAL_EFFORT_COLUMN 3
+#define TASKS_EFFORT_COLUMN 3
 #define TASKS_STATE_COLUMN 4
 
 BEGIN_MESSAGE_MAP(CProjectsDialog, CDialogEx)
 	ON_NOTIFY(NM_RCLICK, IDC_LSC_TASKS, &CProjectsDialog::OnListTasksRightClick)
 	ON_COMMAND(ID_ADD_TASK, &CProjectsDialog::OnAddTask)
+	ON_COMMAND(ID_UPDATE_TASK, &CProjectsDialog::OnUpdateTask)
+	ON_COMMAND(ID_DELETE_TASK, &CProjectsDialog::OnDeleteTask)
 	ON_BN_CLICKED(IDOK, &CProjectsDialog::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CProjectsDialog::OnBnClickedCancel)
 END_MESSAGE_MAP()
@@ -65,6 +69,8 @@ void CProjectsDialog::OnListTasksRightClick(NMHDR* pNMHDR, LRESULT* pResult)
 	int nSelectedItem = m_oListTasks.GetNextItem(-1, LVNI_SELECTED);
     if (nSelectedItem != -1)
     {
+		oContextMenu.AppendMenuW(MF_STRING, ID_UPDATE_TASK, _T("Update Task"));
+		oContextMenu.AppendMenuW(MF_STRING, ID_DELETE_TASK, _T("Delete Task"));
 	}
 	else {
 		oContextMenu.AppendMenuW(MF_STRING, ID_ADD_TASK, _T("Add Tasks"));
@@ -85,7 +91,7 @@ BOOL CProjectsDialog::OnInitDialog()
 	m_oListTasks.InsertColumn(TASKS_ID_COLUMN, _T("ID"), LVCFMT_LEFT, 50);
 	m_oListTasks.InsertColumn(TASKS_NAME_COLUMN, _T("Name"), LVCFMT_LEFT, 100);
 	m_oListTasks.InsertColumn(TASKS_DESCRIPTION_COLUMN, _T("Description"), LVCFMT_LEFT, 150);
-	m_oListTasks.InsertColumn(TASKS_TOTAL_EFFORT_COLUMN, _T("Effort"), LVCFMT_LEFT, 100);
+	m_oListTasks.InsertColumn(TASKS_EFFORT_COLUMN, _T("Effort"), LVCFMT_LEFT, 100);
 	m_oListTasks.InsertColumn(TASKS_STATE_COLUMN, _T("State"), LVCFMT_LEFT, 100);
 
 	m_oListTasks.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
@@ -100,6 +106,9 @@ BOOL CProjectsDialog::OnInitDialog()
 		ViewProjectDetails();
 		break;
 
+	case ViewUpdate:
+		FillTasksInTable();
+
 	default:
 		break;
 	}
@@ -107,13 +116,17 @@ BOOL CProjectsDialog::OnInitDialog()
 	return TRUE;
 }
 
-void CProjectsDialog::ViewProjectDetails()
+void CProjectsDialog::FillTasksInTable()
 {
-	// Fill tasks
 	for (int i = 0; i < m_oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
 	{
 		VisualizeTask(*m_oProjectDetails.oTasksTypedPtrArray[i]);
 	}
+};
+
+void CProjectsDialog::ViewProjectDetails()
+{
+	FillTasksInTable();
 
 	// Set the correct selection based on m_oProjectDetails.recProject.nState
 	for (int i = 0; i < m_oStateComboBox.GetCount(); ++i)
@@ -184,16 +197,59 @@ void CProjectsDialog::OnAddTask()
 	}
 }
 
+void CProjectsDialog::OnUpdateTask() 
+{
+	int nSelectedItem = m_oListTasks.GetNextItem(-1, LVNI_SELECTED);
+	if (nSelectedItem != -1)
+	{
+		TASKS* pTask = (TASKS*)m_oListTasks.GetItemData(nSelectedItem);
+		CTasksDialog oTasksDialog(m_oUsersArray, *pTask);
+
+		if (oTasksDialog.DoModal() == IDOK)
+		{
+			CString strTaskId;
+			strTaskId.Format(_T("%ld"), pTask->lId);
+
+			CString strEffort;
+			strEffort.Format(_T("%d"), pTask->nEffort);
+
+			CString strState = StateToString((StateEnum)pTask->nState);
+
+			m_oListTasks.SetItemText(nSelectedItem, TASKS_ID_COLUMN, strTaskId);
+			m_oListTasks.SetItemText(nSelectedItem, TASKS_NAME_COLUMN, pTask->szName);
+			m_oListTasks.SetItemText(nSelectedItem, TASKS_DESCRIPTION_COLUMN, pTask->szDescription);
+			m_oListTasks.SetItemText(nSelectedItem, TASKS_EFFORT_COLUMN, strEffort);
+			m_oListTasks.SetItemText(nSelectedItem, TASKS_STATE_COLUMN, strState);
+		}
+	}
+}
+
+void CProjectsDialog::OnDeleteTask()
+{
+	int nSelectedItem = m_oListTasks.GetNextItem(-1, LVNI_SELECTED);
+	if (nSelectedItem != -1)
+	{
+		m_oListTasks.DeleteItem(nSelectedItem);
+	}
+}
+
 void CProjectsDialog::VisualizeTask(TASKS& oTask)
 {
+
+	CString strEffort;
+	strEffort.Format(_T("%d"), oTask.nEffort);
+
+	CString strTaskId;
+	strTaskId.Format(_T("%d"), oTask.lId);
+	
 	int nIndex = m_oListTasks.InsertItem(1, _T(""));
+	m_oListTasks.SetItemText(nIndex, TASKS_ID_COLUMN, strTaskId);
 	m_oListTasks.SetItemText(nIndex, TASKS_NAME_COLUMN, oTask.szName);
 	m_oListTasks.SetItemText(nIndex, TASKS_DESCRIPTION_COLUMN, oTask.szDescription);
-
-	CString strTotalEffort = _T("7");
-
+	m_oListTasks.SetItemText(nIndex, TASKS_EFFORT_COLUMN, strEffort);
 	CString strState = StateToString((StateEnum)oTask.nState);
 	m_oListTasks.SetItemText(nIndex, TASKS_STATE_COLUMN, strState);
+	m_oListTasks.SetItemData(nIndex, (DWORD_PTR)&oTask);
 }
 
 void CProjectsDialog::OnBnClickedOk()

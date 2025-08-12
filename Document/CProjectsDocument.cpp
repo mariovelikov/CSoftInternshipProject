@@ -77,20 +77,20 @@ bool CProjectsDocument::AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& o
 	return true;
 }
 
-bool CProjectsDocument::UpdateProject(PROJECTS& oRecProject)
+bool CProjectsDocument::UpdateProject(PROJECT_DETAILS& oRecProject, CTasksTypedPtrArray& oDeleteTasks)
 {
 	CProjectsAppService oProjectsAppService;
-	if (!oProjectsAppService.UpdateProject(oRecProject))
+	if (!oProjectsAppService.UpdateProject(oRecProject, oDeleteTasks))
 	{
 		return false;
 	}
 
-	for (int i = 0; i < m_oProjectsArray.GetCount(); ++i)
+	for (int i = 0; i < m_oProjectsViewItemArray.GetCount(); ++i)
 	{
-		if (m_oProjectsArray[i]->lId == oRecProject.lId)
+		if (m_oProjectsViewItemArray[i]->recProject.lId == oRecProject.recProject.lId)
 		{
-			*m_oProjectsArray[i] = oRecProject;
-			UpdateAllViews(nullptr, (LPARAM)ViewUpdate, (CObject*)m_oProjectsArray[i]);
+			m_oProjectsViewItemArray[i]->recProject = oRecProject.recProject;
+			UpdateAllViews(nullptr, (LPARAM)ViewUpdate, (CObject*)m_oProjectsViewItemArray[i]);
 			return true;
 		}
 	}

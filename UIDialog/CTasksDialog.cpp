@@ -15,7 +15,9 @@ IMPLEMENT_DYNAMIC(CTasksDialog, CDialogEx)
 CTasksDialog::CTasksDialog(CUsersTypedPtrArray& oUsersArray, TASKS& oTask, CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_EDB_TASKS_DIALOG, pParent), m_oTask(oTask), m_oUsersArray(oUsersArray)
 {
-
+	m_strName = m_oTask.szName;
+	m_strDescription = m_oTask.szDescription;
+	m_nEffort = m_oTask.nEffort;
 }
 
 CTasksDialog::~CTasksDialog()

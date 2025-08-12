@@ -12,12 +12,14 @@
 #define ID_PROJECT_ADD 1001
 #define ID_PROJECT_DETAILS 1002
 #define ID_PROJECT_DELETE 1003
+#define ID_PROJECT_UPDATE 1004
 
 IMPLEMENT_DYNCREATE(CProjectsView, CListView)
 
 BEGIN_MESSAGE_MAP(CProjectsView, CListView)
 	ON_NOTIFY_REFLECT(NM_RCLICK, &CProjectsView::OnNMRClick)
 	ON_COMMAND(ID_PROJECT_ADD, &CProjectsView::OnProjectAdd)
+	ON_COMMAND(ID_PROJECT_UPDATE, &CProjectsView::OnProjectUpdate)
 	ON_COMMAND(ID_PROJECT_DETAILS, &CProjectsView::OnProjectDetails)
 	ON_COMMAND(ID_PROJECT_DELETE, &CProjectsView::OnProjectDelete)
 END_MESSAGE_MAP()
@@ -176,6 +178,32 @@ void CProjectsView::OnProjectDelete()
 	}
 }
 
+void CProjectsView::OnProjectUpdate()
+{
+	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
+
+	CListCtrl& oListCtrl = GetListCtrl();
+	int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
+
+	if (nSelectedItem == -1)
+	{
+		return;
+	}
+	PROJECTS_VIEW_ITEM* pProject = (PROJECTS_VIEW_ITEM*)oListCtrl.GetItemData(nSelectedItem);
+
+	PROJECT_DETAILS oProject;
+	oProject.recProject = pProject->recProject;
+
+	GetDocument()->GetProjectDetails(oProject);
+	CProjectsDialog oProjectDialog(oUsersArray, oProject, ViewUpdate);
+
+	if (oProjectDialog.DoModal() == IDOK)
+	{
+		CTasksTypedPtrArray oDeleteTasks;
+		GetDocument()->UpdateProject(oProject, oDeleteTasks);
+	}
+}
+
 void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	CPoint oPoint;
@@ -190,9 +218,7 @@ void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
 		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_ADD, _T("Add Project"));
 	}
 	else 
-	{/*
-		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_UPDATE, _T("Update Project"));
-		*/
+	{	oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_UPDATE, _T("Update Project"));
 		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DELETE, _T("Delete Project"));
 		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DETAILS, _T("View Project Details"));
 	}
@@ -232,19 +258,18 @@ void CProjectsView::OnUpdate(CView* /*pSender*/, LPARAM lHint, CObject* pHint)
 		}
 		break;
 	}
-
-	/*case ViewUpdate:
+	case ViewUpdate:
 	{
-		USERS* pUser = (USERS*)pHint;
+		PROJECTS_VIEW_ITEM* pProjectDetails= (PROJECTS_VIEW_ITEM*)pHint;
 		CListCtrl& oListCtrl = GetListCtrl();
 
 		int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
 		if (nSelectedItem != -1)
 		{
-			InsertDataInCtrl(pUser, nSelectedItem, ViewUpdate);
+			InsertDataInCtrl(pProjectDetails, nSelectedItem, ViewUpdate);
 		}
 		break;
-	}*/
+	}
 
 	default:
 		break;
