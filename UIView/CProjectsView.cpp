@@ -11,6 +11,7 @@
 // ----------------
 #define ID_PROJECT_ADD 1001
 #define ID_PROJECT_DETAILS 1002
+#define ID_PROJECT_DELETE 1003
 
 IMPLEMENT_DYNCREATE(CProjectsView, CListView)
 
@@ -18,6 +19,7 @@ BEGIN_MESSAGE_MAP(CProjectsView, CListView)
 	ON_NOTIFY_REFLECT(NM_RCLICK, &CProjectsView::OnNMRClick)
 	ON_COMMAND(ID_PROJECT_ADD, &CProjectsView::OnProjectAdd)
 	ON_COMMAND(ID_PROJECT_DETAILS, &CProjectsView::OnProjectDetails)
+	ON_COMMAND(ID_PROJECT_DELETE, &CProjectsView::OnProjectDelete)
 END_MESSAGE_MAP()
 
 //Constructor / Destructor
@@ -151,6 +153,32 @@ void CProjectsView::OnProjectDetails()
 	oProjectDialog.DoModal();
 }
 
+void CProjectsView::OnProjectDelete()
+{
+	CListCtrl& oListCtrl = GetListCtrl();
+	int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
+
+	if (nSelectedItem == -1)
+	{
+		return;
+	}
+
+	int result = AfxMessageBox(_T("Are you sure you want to delete this item?"), MB_YESNO | MB_ICONQUESTION);
+	if (result == IDYES)
+	{
+		PROJECTS_VIEW_ITEM* pProject = (PROJECTS_VIEW_ITEM*)oListCtrl.GetItemData(nSelectedItem);
+		PROJECT_DETAILS oProject;
+		oProject.recProject = pProject->recProject;
+
+		GetDocument()->GetProjectDetails(oProject);
+
+		if (!GetDocument()->DeleteProject(oProject))
+		{
+			AfxMessageBox(_T("Failed to delete project with tasks."));
+		}
+	}
+}
+
 void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	CPoint oPoint;
@@ -167,7 +195,8 @@ void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
 	else 
 	{/*
 		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_UPDATE, _T("Update Project"));
-		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DELETE, _T("Delete Project"));*/
+		*/
+		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DELETE, _T("Delete Project"));
 		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DETAILS, _T("View Project Details"));
 	}
 
@@ -194,6 +223,19 @@ void CProjectsView::OnUpdate(CView* /*pSender*/, LPARAM lHint, CObject* pHint)
 		break;
 	}
 
+	case ViewDelete:
+	{
+		PROJECTS_VIEW_ITEM* pViewItem = (PROJECTS_VIEW_ITEM*)pHint;
+		CListCtrl& oListCtrl = GetListCtrl();
+
+		int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
+		if (nSelectedItem != -1)
+		{
+			oListCtrl.DeleteItem(nSelectedItem);
+		}
+		break;
+	}
+
 	/*case ViewUpdate:
 	{
 		USERS* pUser = (USERS*)pHint;
@@ -205,21 +247,10 @@ void CProjectsView::OnUpdate(CView* /*pSender*/, LPARAM lHint, CObject* pHint)
 			InsertDataInCtrl(pUser, nSelectedItem, ViewUpdate);
 		}
 		break;
-	}
-
-	case ViewDelete:
-	{
-		USERS* pUser = (USERS*)pHint;
-		CListCtrl& oListCtrl = GetListCtrl();
-
-		int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
-		if (nSelectedItem != -1)
-		{
-			oListCtrl.DeleteItem(nSelectedItem);
-		}
-		break;
 	}*/
+
 	default:
 		break;
 	}
 }
+

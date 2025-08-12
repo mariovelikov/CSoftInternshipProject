@@ -97,17 +97,17 @@ bool CProjectsDocument::UpdateProject(PROJECTS& oRecProject)
 	return false;
 }
 
-bool CProjectsDocument::DeleteProject(const long lId)
+bool CProjectsDocument::DeleteProject(PROJECT_DETAILS& oProjectDetails)
 {
 	CProjectsAppService oProjectsAppService;
-	if (!oProjectsAppService.DeleteProject(lId))
+	if (!oProjectsAppService.DeleteProject(oProjectDetails))
 	{
 		return false;
 	}
 
 	for (int i = 0; i < m_oProjectsArray.GetCount(); ++i)
 	{
-		if (m_oProjectsArray[i]->lId == lId)
+		if (m_oProjectsArray[i]->lId == oProjectDetails.recProject.lId)
 		{
 			m_oProjectsArray.RemoveAt(i);
 			UpdateAllViews(nullptr, (LPARAM)ViewDelete, nullptr);

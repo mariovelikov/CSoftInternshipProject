@@ -184,33 +184,40 @@ bool CProjectsAppService::UpdateProject(PROJECTS& oRecord) const //
 	return true;
 };
 
-bool CProjectsAppService::DeleteProject(const long lID) const
+bool CProjectsAppService::DeleteProject(const PROJECT_DETAILS& oProjectDetails) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession oSession;
 
 	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		oSession.Close();
 		return false;
 	}
 
-	CTasksTable oTasksTable(oSession); // put in tables
+	oSession.StartTransaction();
+	CTasksTable oTasksTable(oSession);
+	
 	//delete all tasks associated with the project
-
-	CProjectsTable oProjetsTable(oSession); // put in tables
-
-
-	if (!oProjetsTable.DeleteWhereID(lID))
+	for (int i = 0; i < oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
 	{
-		//oSession.Rollback();
+		if (!oTasksTable.DeleteWhereID(oProjectDetails.oTasksTypedPtrArray.GetAt(i)->lId))
+		{
+			oSession.Abort();
+			oSession.Close();
+			return false;
+		}
+	}
+
+	CProjectsTable oProjetsTable(oSession);
+	if (!oProjetsTable.DeleteWhereID(oProjectDetails.recProject.lId))
+	{
+		oSession.Abort();
 		oSession.Close();
 		return false;
 	}
 
+	oSession.Commit();
 	oSession.Close();
 	return true;
 };

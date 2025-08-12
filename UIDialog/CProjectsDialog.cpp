@@ -102,7 +102,6 @@ BOOL CProjectsDialog::OnInitDialog()
 		break;
 	}
 
-
 	return TRUE;
 }
 
@@ -124,6 +123,13 @@ void CProjectsDialog::ViewProjectDetails()
 			break;
 		}
 	}
+
+	// Disable controls if viewing details
+	m_oStateComboBox.EnableWindow(FALSE);
+	GetDlgItem(IDC_CMB_USERS)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDB_PROJECTS_NAME)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDB_PROJECTS_DESCRIPTION)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CMB_STATE)->EnableWindow(FALSE);
 }
 
 void CProjectsDialog::FillComboBoxes()

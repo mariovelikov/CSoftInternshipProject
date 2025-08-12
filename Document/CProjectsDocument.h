@@ -26,7 +26,7 @@ public:
 	bool GetProjectDetails(PROJECT_DETAILS& oProjectDetails);
 	bool AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& oTasks);
 	bool UpdateProject(PROJECTS& oRecProject);
-	bool DeleteProject(const long lId);
+	bool DeleteProject(PROJECT_DETAILS& oProjectDetails);
 	// Overrides
 	// ----------------
 	BOOL OnNewDocument() override;

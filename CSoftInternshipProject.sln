@@ -54,8 +54,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FCBF418C-BCEF-40E5-954C-F87832879A76}"
 	ProjectSection(SolutionItems) = preProject
 		CSoftInternshipProject.md = CSoftInternshipProject.md
-		SampleClass.h = SampleClass.h
 		SampleClass.cpp = SampleClass.cpp
+		SampleClass.h = SampleClass.h
+		Tasks.txt = Tasks.txt
 	EndProjectSection
 EndProject
 Global
