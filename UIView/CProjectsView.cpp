@@ -106,13 +106,10 @@ void CProjectsView::OnProjectAdd()
 	CProjectsDialog oProjectsDialog(oUsersArray, oProjectDetails, ViewAdd);
 	if (oProjectsDialog.DoModal() == IDOK)
 	{
-		if (GetDocument()->AddProject(oProjectDetails.recProject, oProjectDetails.oTasksTypedPtrArray))
-		{
-			//GetDocument()->GetAllProjects();
-		}
-		else
+		if (!GetDocument()->AddProject(oProjectDetails.recProject, oProjectDetails.oTasksTypedPtrArray))
 		{
 			AfxMessageBox(_T("Failed to add the project. Please check the input data or try again."));
+			
 		}
 	}
 	else

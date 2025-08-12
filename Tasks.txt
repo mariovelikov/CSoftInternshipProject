@@ -1,1 +1,5 @@
 1. Problem with unique task name
+
+2. Show total effort in projects
+
+3. Create new function that return session in Application

@@ -33,6 +33,7 @@ CProjectsDialog::CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECT_DETAI
 {
 	m_strName = m_oProjectDetails.recProject.szName;
 	m_strDescription = m_oProjectDetails.recProject.szDescription;
+	m_nTotalEffort = m_oProjectDetails.recProject.nTotalEffort;
 }
 
 CProjectsDialog::~CProjectsDialog()
@@ -47,6 +48,7 @@ void CProjectsDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LSC_TASKS, m_oListTasks);
 	DDX_Text(pDX, IDC_EDB_PROJECTS_NAME, m_strName);
 	DDX_Text(pDX, IDC_EDB_PROJECTS_DESCRIPTION, m_strDescription);
+	DDX_Text(pDX, IDC_CMB_TOTAL_EFFORT, m_nTotalEffort);
 
 	DDV_MaxChars(pDX, m_strName, TASKS_NAME_LENGTH);
 	DDV_MaxChars(pDX, m_strDescription, TASKS_DESCRIPTION_LENGTH);
@@ -130,6 +132,9 @@ void CProjectsDialog::ViewProjectDetails()
 	GetDlgItem(IDC_EDB_PROJECTS_NAME)->EnableWindow(FALSE);
 	GetDlgItem(IDC_EDB_PROJECTS_DESCRIPTION)->EnableWindow(FALSE);
 	GetDlgItem(IDC_CMB_STATE)->EnableWindow(FALSE);
+	GetDlgItem(IDC_STT_TOTAL_EFFORT_TITLE)->ShowWindow(TRUE);
+	GetDlgItem(IDC_CMB_TOTAL_EFFORT)->ShowWindow(TRUE);
+	GetDlgItem(IDC_CMB_TOTAL_EFFORT)->EnableWindow(FALSE);
 }
 
 void CProjectsDialog::FillComboBoxes()
