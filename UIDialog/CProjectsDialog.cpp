@@ -28,9 +28,11 @@ IMPLEMENT_DYNAMIC(CProjectsDialog, CDialogEx)
 
 //Constructor / Destructor
 //----------------
-CProjectsDialog::CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECTS& oProject, CTasksTypedPtrArray& oTasksArray, CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_EDB_PROJECTS_DIALOG, pParent), m_oUsersArray(oUsersArray), m_oProject(oProject), m_oTasksArray(oTasksArray)
+CProjectsDialog::CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECT_DETAILS& oProjectDetails, ViewActions eAction, CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_EDB_PROJECTS_DIALOG, pParent), m_oUsersArray(oUsersArray), m_oProjectDetails(oProjectDetails), m_eCurrentAction(eAction)
 {
+	m_strName = m_oProjectDetails.recProject.szName;
+	m_strDescription = m_oProjectDetails.recProject.szDescription;
 }
 
 CProjectsDialog::~CProjectsDialog()
@@ -41,6 +43,7 @@ void CProjectsDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CMB_USERS, m_oUsersComboBox);
+	DDX_Control(pDX, IDC_CMB_STATE, m_oStateComboBox);
 	DDX_Control(pDX, IDC_LSC_TASKS, m_oListTasks);
 	DDX_Text(pDX, IDC_EDB_PROJECTS_NAME, m_strName);
 	DDX_Text(pDX, IDC_EDB_PROJECTS_DESCRIPTION, m_strDescription);
@@ -80,13 +83,51 @@ BOOL CProjectsDialog::OnInitDialog()
 	m_oListTasks.InsertColumn(TASKS_ID_COLUMN, _T("ID"), LVCFMT_LEFT, 50);
 	m_oListTasks.InsertColumn(TASKS_NAME_COLUMN, _T("Name"), LVCFMT_LEFT, 100);
 	m_oListTasks.InsertColumn(TASKS_DESCRIPTION_COLUMN, _T("Description"), LVCFMT_LEFT, 150);
-	m_oListTasks.InsertColumn(TASKS_TOTAL_EFFORT_COLUMN, _T("Total Effort"), LVCFMT_LEFT, 100);
+	m_oListTasks.InsertColumn(TASKS_TOTAL_EFFORT_COLUMN, _T("Effort"), LVCFMT_LEFT, 100);
 	m_oListTasks.InsertColumn(TASKS_STATE_COLUMN, _T("State"), LVCFMT_LEFT, 100);
 
 	m_oListTasks.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 	m_oUsersComboBox.ModifyStyle(CBS_SORT, 0);
 
+	FillComboBoxes();
+
+	switch (m_eCurrentAction)
+	{
+	case ViewDetails:
+		ViewProjectDetails();
+		break;
+
+	default:
+		break;
+	}
+
+
+	return TRUE;
+}
+
+void CProjectsDialog::ViewProjectDetails()
+{
+	// Fill tasks
+	for (int i = 0; i < m_oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
+	{
+		VisualizeTask(*m_oProjectDetails.oTasksTypedPtrArray[i]);
+	}
+
+	// Set the correct selection based on m_oProjectDetails.recProject.nState
+	for (int i = 0; i < m_oStateComboBox.GetCount(); ++i)
+	{
+		DWORD_PTR data = m_oStateComboBox.GetItemData(i);
+		if ((ProjectsStateEnum)data == m_oProjectDetails.recProject.nState)
+		{
+			m_oStateComboBox.SetCurSel(i);
+			break;
+		}
+	}
+}
+
+void CProjectsDialog::FillComboBoxes()
+{
 	// fil the combo box with users
 	for (int i = 0; i < m_oUsersArray.GetCount(); i++)
 	{
@@ -105,9 +146,15 @@ BOOL CProjectsDialog::OnInitDialog()
 	if (m_oUsersComboBox.GetCount() > 0)
 		m_oUsersComboBox.SetCurSel(0);
 
-	return TRUE;
-}
+	int nIndex = m_oStateComboBox.AddString(_T("Active"));
+	m_oStateComboBox.SetItemData(nIndex, Active);
 
+	nIndex = m_oStateComboBox.AddString(_T("Finished"));
+	m_oStateComboBox.SetItemData(nIndex, Finished);
+
+	if (m_oStateComboBox.GetCount() > 0)
+		m_oStateComboBox.SetCurSel(0);
+}
 
 void CProjectsDialog::OnAddTask()
 {
@@ -117,7 +164,8 @@ void CProjectsDialog::OnAddTask()
 	if (oTasksDialog.DoModal() == IDOK)
 	{
 		VisualizeTask(oTask);
-		m_oTasksArray.Add(new TASKS(oTask));
+		m_oProjectDetails.oTasksTypedPtrArray.Add(new TASKS(oTask));
+		m_oProjectDetails.recProject.nTotalEffort += oTask.nEffort;
 	}
 	else
 	{
@@ -131,8 +179,7 @@ void CProjectsDialog::VisualizeTask(TASKS& oTask)
 	m_oListTasks.SetItemText(nIndex, TASKS_NAME_COLUMN, oTask.szName);
 	m_oListTasks.SetItemText(nIndex, TASKS_DESCRIPTION_COLUMN, oTask.szDescription);
 
-	CString strTotalEffort = TotalEffortToString((TotalEffortEnum)oTask.nTotalEffort);
-	m_oListTasks.SetItemText(nIndex, TASKS_TOTAL_EFFORT_COLUMN, strTotalEffort);
+	CString strTotalEffort = _T("7");
 
 	CString strState = StateToString((StateEnum)oTask.nState);
 	m_oListTasks.SetItemText(nIndex, TASKS_STATE_COLUMN, strState);
@@ -153,42 +200,28 @@ void CProjectsDialog::FillProjectData()
 {
 	int nSelected = m_oUsersComboBox.GetCurSel();
 	if (nSelected != CB_ERR) {
-		m_oProject.lProjectManagerId = static_cast<long>(m_oUsersComboBox.GetItemData(nSelected));
+		m_oProjectDetails.recProject.lProjectManagerId = static_cast<long>(m_oUsersComboBox.GetItemData(nSelected));
 	}
 
-	_tcscpy_s(m_oProject.szName, PROJECTS_NAME_LENGTH, m_strName);
-	_tcscpy_s(m_oProject.szDescription, PROJECTS_DESCRIPTION_LENGTH, m_strDescription);
-}
-
-CString CProjectsDialog::TotalEffortToString(TotalEffortEnum effort)
-{
-	switch (effort)
-	{
-	case TotalEffortLow:
-		return _T("Low");
-	case TotalEffortMedium:
-		return _T("Medium");
-	case TotalEffortHigh:
-		return _T("High");
-	default:
-		return _T("Unknown");
+	nSelected = m_oStateComboBox.GetCurSel();
+	if (nSelected != CB_ERR) {
+		m_oProjectDetails.recProject.nState = static_cast<int>(m_oStateComboBox.GetItemData(nSelected));
 	}
+
+	_tcscpy_s(m_oProjectDetails.recProject.szName, PROJECTS_NAME_LENGTH, m_strName);
+	_tcscpy_s(m_oProjectDetails.recProject.szDescription, PROJECTS_DESCRIPTION_LENGTH, m_strDescription);
 }
 
 CString CProjectsDialog::StateToString(StateEnum state)
 {
 	switch (state)
 	{
-	case TaskPending:
+	case Pending:
 		return _T("Pending");
-	case TaskActive:
-		return _T("Active");
-	case TaskOnHold:
-		return _T("On Hold");
-	case TaskClosedComplete:
-		return _T("Completed");
-	case TaskClosedCancel:
-		return _T("Canceled");
+	case InProgress:
+		return _T("InProgress");
+	case Ended:
+		return _T("Ended");
 	default:
 		return _T("Unknown");
 	}
@@ -215,6 +248,13 @@ bool CProjectsDialog::ValidateData()
 		strErrorMessage += _T("\nPlease select a project manager.");
 		bValid = false;
 	}
+
+	if (m_oStateComboBox.GetCurSel() == CB_ERR)
+	{
+		strErrorMessage += _T("\nPlease select a state of project.");
+		bValid = false;
+	}
+
 	if (!bValid) {
 		AfxMessageBox(strErrorMessage);
 	}

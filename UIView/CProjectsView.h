@@ -28,7 +28,7 @@ public:
 	// ----------------
 public:
 	void CProjectsView::OnProjectAdd();
-	//void CProjectsView::OnProjectDetails();
+	void CProjectsView::OnProjectDetails();
 
 	/*
 	void CProjectsView::OnProjectUpdate();

@@ -38,6 +38,16 @@ CProjectsViewItemTypedPtrArray& CProjectsDocument::GetAllProjects()
 	};
 };
 
+bool CProjectsDocument::GetProjectDetails(PROJECT_DETAILS& oProjectDetails)
+{
+	CProjectsAppService oProjectsAppService;
+	if (!oProjectsAppService.GetProjectDetails(oProjectDetails))
+	{
+		return false;
+	}
+	return true;
+};
+
 bool CProjectsDocument::AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& oTasks)
 {
 	CProjectsAppService oProjectsAppService;
@@ -118,7 +128,10 @@ CUsersTypedPtrArray& CProjectsDocument::GetAllUsers()
 			return m_oUsersArray;
 		}
 		return m_oUsersArray;
-	};
+	}
+	else {
+		return m_oUsersArray;
+	}
 }
 
 // Overrides

@@ -8,18 +8,15 @@
 
 enum StateEnum
 {
-	TaskPending = 1,
-	TaskActive = 2,
-	TaskOnHold = 3,
-	TaskClosedComplete = 4,
-	TaskClosedCancel = 5
+	Pending = 1,
+	InProgress = 2,
+	Ended = 3
 };
 
-enum TotalEffortEnum
+enum ProjectsStateEnum
 {
-	TotalEffortLow = 1,
-	TotalEffortMedium = 2,
-	TotalEffortHigh = 3
+	Active = 1,
+	Finished = 2
 };
 
 /// <summary> Struct Users </summary>
@@ -56,6 +53,7 @@ struct USERS
 
 #define PROJECTS_NAME_LENGTH 64
 #define PROJECTS_DESCRIPTION_LENGTH 256
+#define PROJECTS_TOTAL_EFFORT_DEFAULT 0
 
 /// <summary> Struct Projects </summary>
 struct PROJECTS 
@@ -75,6 +73,12 @@ struct PROJECTS
 
 	/// <summary> A variable that stores the project manager's identifier.</summary>
 	long lProjectManagerId;
+
+	/// <summary> A variable that stores state of project. </summary>
+	int nState = Active;
+
+	/// <summary>A variable that stores total effort for all project. </summary>
+	int nTotalEffort = PROJECTS_TOTAL_EFFORT_DEFAULT;
 
 	// Constructor 
 	// ----------------
@@ -110,10 +114,10 @@ struct TASKS
 	long lUserId;
 
 	/// <summary> Declares and initializes an integer variable representing the state of a project. </summary>
-	int nState = TaskPending;
+	int nState = Pending;
 
 	/// <summary> Stores the total effort value as int. </summary>
-	int nTotalEffort;
+	int nEffort;
 
 	// Constructor 
 	// ----------------

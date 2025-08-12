@@ -54,9 +54,9 @@ private:
 	CUsersTypedPtrArray& m_oUsersArray;
 	CComboBox m_oUsersComboBox;
 	CComboBox m_oStateComboBox;
-	CComboBox m_oTotalEffortComboBox;
 	CString m_strName;
 	CString m_strDescription;
+	int m_nEffort;
 
 	TASKS& m_oTask;
 public:

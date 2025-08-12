@@ -74,10 +74,49 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjec
 	return true;
 };
 
-bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTasksArray) const
+bool CProjectsAppService::GetProjectDetails(PROJECT_DETAILS& oProjectDetails) const
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CSession oSession;
+
+	HRESULT hResult = oSession.Open(oDataSource);
+	if (FAILED(hResult)) {
+		CString errorMessage;
+		errorMessage.Format(_T("Open session failed. HRESULT: %d"), hResult);
+		TRACE(errorMessage);
+
+		oSession.Close();
+		return false;
+	}
+
+	CTasksTable oTasksTable(oSession);
+	CTasksTypedPtrArray oTasks; 
+	if (!oTasksTable.SelectAll(oTasks)) {
+		oSession.Close();
+		return false;
+	}
+
+	for (int i = 0; i < oTasks.GetCount(); i++) 
+	{
+		CString name = oTasks[i]->szName;
+
+		if (oTasks.GetAt(i)->lProjectId == oProjectDetails.recProject.lId) 
+		{
+			TASKS oTask = *oTasks[i];
+			TASKS* pTask = new TASKS();
+			*pTask = oTask;
+			oProjectDetails.oTasksTypedPtrArray.Add(pTask);
+		}
+	}
+
+	oSession.Close();
+	return true;
+}
+
+bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTasksArray) const
+{
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession oSession;
 
 	HRESULT hResult = oSession.Open(oDataSource);

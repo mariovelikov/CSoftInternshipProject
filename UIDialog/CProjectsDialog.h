@@ -2,6 +2,7 @@
 #include "afxdialogex.h"
 #include "DLLExport.h"
 #include "STRUCTURES.h"
+#include "ViewACtions.h"
 
 // CProjectsDialog dialog
 
@@ -10,7 +11,7 @@ class UIDialogDLL_EXP CProjectsDialog : public CDialogEx
 	DECLARE_DYNAMIC(CProjectsDialog)
 
 public:
-	CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECTS& oProject, CTasksTypedPtrArray& oTasksArray, CWnd* pParent = nullptr);   // standard constructor
+	CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECT_DETAILS& oProjectDetails, ViewActions eAction, CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CProjectsDialog();
 
 // Dialog Data
@@ -20,13 +21,6 @@ public:
 	//Methods
 	//----------------
 private:
-	/// <summary>
-	/// Converts the TotalEffortEnum to a string representation.
-	/// </summary>
-	/// <param name="effort"></param>
-	/// <returns></returns>
-	CString TotalEffortToString(TotalEffortEnum effort);
-
 	/// <summary>
 	/// Converts the StateEnum to a string representation.
 	/// </summary>
@@ -51,7 +45,14 @@ private:
 
 	void VisualizeTask(TASKS& oTask);
 
+	/// <summary> Fill all data for project</summary>
 	void FillProjectData();
+
+	/// <summary> Fill all data in combo boxes </summary>
+	void FillComboBoxes();
+
+	/// <summary> Set all project details data in boxes </summary>
+	void ViewProjectDetails();
 public:
 	//Overrides
 	// ----------------
@@ -66,11 +67,12 @@ protected:
 	CUsersTypedPtrArray& m_oUsersArray;
 
 	CComboBox m_oUsersComboBox;
+	CComboBox m_oStateComboBox;
 	CString m_strName;
 	CString m_strDescription;
-
-	CTasksTypedPtrArray& m_oTasksArray;
-	PROJECTS& m_oProject;
+	
+	PROJECT_DETAILS& m_oProjectDetails;
+	ViewActions m_eCurrentAction;
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();

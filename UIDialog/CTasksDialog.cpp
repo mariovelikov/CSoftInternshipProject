@@ -27,10 +27,12 @@ void CTasksDialog::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CMB_TASKS_USERS, m_oUsersComboBox);
 	DDX_Control(pDX, IDC_CMB_TASKS_STATE, m_oStateComboBox);
-	DDX_Control(pDX, IDC_CMB_TASKS_TOTAL_EFFORT, m_oTotalEffortComboBox);
 	DDX_Text(pDX, IDC_EDB_TASKS_NAME, m_strName);
 	DDX_Text(pDX, IDC_EDB_TASKS_DESCRIPTION, m_strDescription);
+	DDX_Text(pDX, IDC_EDB_TASKS_EFFORT, m_nEffort);
 
+
+	DDV_MinMaxInt(pDX, m_nEffort, 0, 100); // Optional: limit range
 	DDV_MaxChars(pDX, m_strName, TASKS_NAME_LENGTH);
 	DDV_MaxChars(pDX, m_strDescription, TASKS_DESCRIPTION_LENGTH);
 }
@@ -46,6 +48,9 @@ END_MESSAGE_MAP()
 BOOL CTasksDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	
+	// Set the edit box to accept only numeric input
+	GetDlgItem(IDC_EDB_TASKS_EFFORT)->ModifyStyle(0, ES_NUMBER);
 
 	FillComboBoxes();
 	return TRUE;
@@ -91,12 +96,6 @@ bool CTasksDialog::ValidateData()
 		bValid = false;
 	}
 
-	if(m_oTotalEffortComboBox.GetCurSel() == CB_ERR)
-	{
-		strErrorMessage += _T("\nPlease select a total effort for the task.");
-		bValid = false;
-	}
-
 	if (!bValid) {
 		AfxMessageBox(strErrorMessage);
 	}
@@ -113,7 +112,7 @@ void CTasksDialog::FillTaskData()
 	}
 	
 	m_oTask.nState = (int)m_oStateComboBox.GetItemData(m_oStateComboBox.GetCurSel());
-	m_oTask.nTotalEffort = (int)m_oTotalEffortComboBox.GetItemData(m_oTotalEffortComboBox.GetCurSel());
+	m_oTask.nEffort = m_nEffort;
 	_tcscpy_s(m_oTask.szName, TASKS_NAME_LENGTH, m_strName);
 	_tcscpy_s(m_oTask.szDescription, TASKS_DESCRIPTION_LENGTH, m_strDescription);
 
@@ -136,28 +135,13 @@ void CTasksDialog::FillComboBoxes()
 
 	//fill the list control with State
 	int index = m_oStateComboBox.AddString(_T("Pending"));
-	m_oStateComboBox.SetItemData(index, TaskPending);
+	m_oStateComboBox.SetItemData(index, Pending);
 
-	index = m_oStateComboBox.AddString(_T("Active"));
-	m_oStateComboBox.SetItemData(index, TaskActive);
+	index = m_oStateComboBox.AddString(_T("InProgress"));
+	m_oStateComboBox.SetItemData(index, InProgress);
 
-	index = m_oStateComboBox.AddString(_T("On Hold"));
-	m_oStateComboBox.SetItemData(index, TaskOnHold);
-
-	index = m_oStateComboBox.AddString(_T("Completed"));
-	m_oStateComboBox.SetItemData(index, TaskClosedComplete);
-
-	index = m_oStateComboBox.AddString(_T("Canceled"));
-	m_oStateComboBox.SetItemData(index, TaskClosedCancel);
-
-	index = m_oTotalEffortComboBox.AddString(_T("Low"));
-	m_oTotalEffortComboBox.SetItemData(index, TotalEffortLow);
-
-	index = m_oTotalEffortComboBox.AddString(_T("Medium"));
-	m_oTotalEffortComboBox.SetItemData(index, TotalEffortMedium);
-
-	index = m_oTotalEffortComboBox.AddString(_T("High"));
-	m_oTotalEffortComboBox.SetItemData(index, TotalEffortHigh);
+	index = m_oStateComboBox.AddString(_T("Ended"));
+	m_oStateComboBox.SetItemData(index, Ended);
 
 	m_oStateComboBox.SetCurSel(0);
 }

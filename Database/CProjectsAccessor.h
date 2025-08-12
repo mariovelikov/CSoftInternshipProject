@@ -16,6 +16,8 @@
 #define PROJECTS_COLUMN_ENTRY_NAME 3
 #define PROJECTS_COLUMN_ENTRY_DESCRIPTION 4
 #define PROJECTS_COLUMN_ENTRY_MANAGER_ID 5
+#define PROJECTS_COLUMN_ENTRY_STATE 6
+#define PROJECTS_COLUMN_ENTRY_TOTAL_EFFORT 7
 
 /// <summary>
 /// Specialization of the CGenericAccessor class for the PROJECTS type, providing access to PROJECTS records and mapping their fields to database columns.
@@ -33,6 +35,8 @@ protected:
 			COLUMN_ENTRY(PROJECTS_COLUMN_ENTRY_NAME, m_rec.szName)
 			COLUMN_ENTRY(PROJECTS_COLUMN_ENTRY_DESCRIPTION, m_rec.szDescription)
 			COLUMN_ENTRY(PROJECTS_COLUMN_ENTRY_MANAGER_ID, m_rec.lProjectManagerId)
+			COLUMN_ENTRY(PROJECTS_COLUMN_ENTRY_STATE, m_rec.nState)
+			COLUMN_ENTRY(PROJECTS_COLUMN_ENTRY_TOTAL_EFFORT, m_rec.nTotalEffort)
 		END_ACCESSOR()
 	END_ACCESSOR_MAP()
 public:

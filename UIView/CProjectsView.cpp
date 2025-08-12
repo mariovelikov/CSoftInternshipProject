@@ -10,12 +10,14 @@
 // Macros
 // ----------------
 #define ID_PROJECT_ADD 1001
+#define ID_PROJECT_DETAILS 1002
 
 IMPLEMENT_DYNCREATE(CProjectsView, CListView)
 
 BEGIN_MESSAGE_MAP(CProjectsView, CListView)
 	ON_NOTIFY_REFLECT(NM_RCLICK, &CProjectsView::OnNMRClick)
 	ON_COMMAND(ID_PROJECT_ADD, &CProjectsView::OnProjectAdd)
+	ON_COMMAND(ID_PROJECT_DETAILS, &CProjectsView::OnProjectDetails)
 END_MESSAGE_MAP()
 
 //Constructor / Destructor
@@ -94,19 +96,17 @@ void CProjectsView::InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nIt
 };
 
 
-// MFC Message Handlers
 void CProjectsView::OnProjectAdd()
 {
 	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
-	PROJECTS oProject;
-	CTasksTypedPtrArray oTasksArray;
+	PROJECT_DETAILS oProjectDetails;
 
-	CProjectsDialog oProjectsDialog(oUsersArray, oProject, oTasksArray);
+	CProjectsDialog oProjectsDialog(oUsersArray, oProjectDetails, ViewAdd);
 	if (oProjectsDialog.DoModal() == IDOK)
 	{
-		if (GetDocument()->AddProject(oProject, oTasksArray))
+		if (GetDocument()->AddProject(oProjectDetails.recProject, oProjectDetails.oTasksTypedPtrArray))
 		{
-			GetDocument()->GetAllProjects();
+			//GetDocument()->GetAllProjects();
 		}
 		else
 		{
@@ -128,16 +128,28 @@ void CProjectsView::OnProjectAdd()
 			OnProjectAdd();
 		}
 	}
-
-	// Clear users array
-	for (int i = 0; i < oUsersArray.GetCount(); i++)
-	{
-		delete oUsersArray[i];
-	}
-
-	oUsersArray.RemoveAll();
 }
 
+void CProjectsView::OnProjectDetails()
+{
+	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
+	
+	CListCtrl& oListCtrl = GetListCtrl();
+	int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
+
+	if (nSelectedItem == -1)
+	{
+		return;
+	}
+	PROJECTS_VIEW_ITEM* pProject = (PROJECTS_VIEW_ITEM*)oListCtrl.GetItemData(nSelectedItem);
+	
+	PROJECT_DETAILS oProject;
+	oProject.recProject = pProject->recProject;
+
+	GetDocument()->GetProjectDetails(oProject);
+	CProjectsDialog oProjectDialog(oUsersArray, oProject, ViewDetails);
+	oProjectDialog.DoModal();
+}
 
 void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
@@ -155,8 +167,8 @@ void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
 	else 
 	{/*
 		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_UPDATE, _T("Update Project"));
-		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DELETE, _T("Delete Project"));
-		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_VIEW, _T("View Project"));*/
+		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DELETE, _T("Delete Project"));*/
+		oContextMenu.AppendMenu(MF_STRING, ID_PROJECT_DETAILS, _T("View Project Details"));
 	}
 
 	oContextMenu.TrackPopupMenu(
