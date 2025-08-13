@@ -50,7 +50,7 @@ private:
 	/// <summary> Validates the data entered in the dialog. </summary>
 	bool ValidateData();
 
-	void VisualizeTask(TASKS& oTask);
+	void VisualizeTask(TASKS& oTask, ViewActions eAction = ViewAdd, int nSeletedIndex = NULL);
 
 	/// <summary> Fill all data for project</summary>
 	void FillProjectData();

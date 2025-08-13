@@ -200,28 +200,27 @@ void CProjectsDialog::OnAddTask()
 void CProjectsDialog::OnUpdateTask() 
 {
 	int nSelectedItem = m_oListTasks.GetNextItem(-1, LVNI_SELECTED);
-	if (nSelectedItem != -1)
+	if (nSelectedItem == -1)
 	{
-		TASKS* pTask = (TASKS*)m_oListTasks.GetItemData(nSelectedItem);
-		CTasksDialog oTasksDialog(m_oUsersArray, *pTask);
-
-		if (oTasksDialog.DoModal() == IDOK)
-		{
-			CString strTaskId;
-			strTaskId.Format(_T("%ld"), pTask->lId);
-
-			CString strEffort;
-			strEffort.Format(_T("%d"), pTask->nEffort);
-
-			CString strState = StateToString((StateEnum)pTask->nState);
-
-			m_oListTasks.SetItemText(nSelectedItem, TASKS_ID_COLUMN, strTaskId);
-			m_oListTasks.SetItemText(nSelectedItem, TASKS_NAME_COLUMN, pTask->szName);
-			m_oListTasks.SetItemText(nSelectedItem, TASKS_DESCRIPTION_COLUMN, pTask->szDescription);
-			m_oListTasks.SetItemText(nSelectedItem, TASKS_EFFORT_COLUMN, strEffort);
-			m_oListTasks.SetItemText(nSelectedItem, TASKS_STATE_COLUMN, strState);
-		}
+		return;
 	}
+
+	TASKS* pTask = (TASKS*)m_oListTasks.GetItemData(nSelectedItem);
+	CTasksDialog oTasksDialog(m_oUsersArray, *pTask);
+
+	if (oTasksDialog.DoModal() != IDOK)
+	{
+		return;
+	}
+
+	// Sum and set new TotalEffort
+	m_oProjectDetails.recProject.nTotalEffort = 0;
+	for (int i = 0; i < m_oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
+	{
+		m_oProjectDetails.recProject.nTotalEffort += m_oProjectDetails.oTasksTypedPtrArray.GetAt(i)->nEffort;
+	}
+
+	VisualizeTask(*pTask, ViewUpdate, nSelectedItem);
 }
 
 void CProjectsDialog::OnDeleteTask()
@@ -260,8 +259,18 @@ void CProjectsDialog::OnDeleteTask()
 	m_oListTasks.DeleteItem(nSelectedItem);
 }
 
-void CProjectsDialog::VisualizeTask(TASKS& oTask)
+void CProjectsDialog::VisualizeTask(TASKS& oTask, ViewActions eAction, int nSelectedItem)
 {
+	int nIndex;
+
+	if (eAction == ViewUpdate)
+	{
+		nIndex = nSelectedItem;
+	}
+	else
+	{
+		nIndex = m_oListTasks.InsertItem(1, _T(""));
+	}
 
 	CString strEffort;
 	strEffort.Format(_T("%d"), oTask.nEffort);
@@ -269,7 +278,6 @@ void CProjectsDialog::VisualizeTask(TASKS& oTask)
 	CString strTaskId;
 	strTaskId.Format(_T("%d"), oTask.lId);
 	
-	int nIndex = m_oListTasks.InsertItem(1, _T(""));
 	m_oListTasks.SetItemText(nIndex, TASKS_ID_COLUMN, strTaskId);
 	m_oListTasks.SetItemText(nIndex, TASKS_NAME_COLUMN, oTask.szName);
 	m_oListTasks.SetItemText(nIndex, TASKS_DESCRIPTION_COLUMN, oTask.szDescription);
