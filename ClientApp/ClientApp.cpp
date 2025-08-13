@@ -60,6 +60,9 @@ BOOL ClientApp::InitInstance()
 	if (!pDocTemplate)
 		return FALSE;
 
+	if (!pProjectsDocTemplate)
+		return FALSE;
+
 	//AddDocTemplate(pDocTemplate);
 	AddDocTemplate(pProjectsDocTemplate);
 
@@ -79,8 +82,6 @@ BOOL ClientApp::InitInstance()
 
 	pMainFrame->ShowWindow(m_nCmdShow);
 	pMainFrame->UpdateWindow();
-
-
 
 	return TRUE;
 }

@@ -178,4 +178,5 @@ struct PROJECT_DETAILS
 {
 	PROJECTS recProject;
 	CTasksTypedPtrArray oTasksTypedPtrArray;
+	CArray<long, long> m_oTaskIdsToDelete;
 };

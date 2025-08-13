@@ -144,7 +144,6 @@ public:
 		{
 			PrintError(hResult, _T("Insert failed"));
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 

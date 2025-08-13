@@ -158,7 +158,7 @@ bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTa
 	
 };
 
-bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord, CTasksTypedPtrArray& oDeleteTasksArray) const // 
+bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const // 
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
@@ -176,14 +176,26 @@ bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord, CTasksTypedPtr
 	CTasksTable oTasksTable(oSession);
 
 	//Delete tasks
-	for (int i = 0; i < oDeleteTasksArray.GetCount(); i++)
+	for (int i = 0; i < oRecord.m_oTaskIdsToDelete.GetCount(); i++)
 	{
-		if (!oTasksTable.DeleteWhereID(oDeleteTasksArray.GetAt(i)->lId))
+		if (!oTasksTable.DeleteWhereID(oRecord.m_oTaskIdsToDelete.GetAt(i)))
 		{
 			oSession.Abort();
 			oSession.Close();
 			return false;
 		}
+	}
+
+	// Add tasks
+	for (int i = 0; i < oRecord.oTasksTypedPtrArray.GetCount(); i++)
+	{
+		if (oRecord.oTasksTypedPtrArray.GetAt(i)->lId != 0)
+		{
+			continue;
+		}
+
+		TASKS& oTask = *oRecord.oTasksTypedPtrArray[i];
+		oTasksTable.Insert(oTask);
 	}
 
 	// Update tasks 

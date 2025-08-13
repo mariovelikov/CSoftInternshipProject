@@ -29,7 +29,6 @@ END_MESSAGE_MAP()
 
 IMPLEMENT_DYNAMIC(CProjectsDialog, CDialogEx)
 
-
 //Constructor / Destructor
 //----------------
 CProjectsDialog::CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECT_DETAILS& oProjectDetails, ViewActions eAction, CWnd* pParent /*=nullptr*/)
@@ -182,14 +181,15 @@ void CProjectsDialog::FillComboBoxes()
 
 void CProjectsDialog::OnAddTask()
 {
-	TASKS oTask;
+	TASKS* oTask = new TASKS();
 
-	CTasksDialog oTasksDialog(m_oUsersArray, oTask);
+	CTasksDialog oTasksDialog(m_oUsersArray, *oTask);
 	if (oTasksDialog.DoModal() == IDOK)
 	{
-		VisualizeTask(oTask);
-		m_oProjectDetails.oTasksTypedPtrArray.Add(new TASKS(oTask));
-		m_oProjectDetails.recProject.nTotalEffort += oTask.nEffort;
+		oTask->lProjectId = m_oProjectDetails.recProject.lId;
+		m_oProjectDetails.oTasksTypedPtrArray.Add(oTask);
+		m_oProjectDetails.recProject.nTotalEffort += oTask->nEffort;
+		VisualizeTask(*oTask);
 	}
 	else
 	{
@@ -227,10 +227,37 @@ void CProjectsDialog::OnUpdateTask()
 void CProjectsDialog::OnDeleteTask()
 {
 	int nSelectedItem = m_oListTasks.GetNextItem(-1, LVNI_SELECTED);
-	if (nSelectedItem != -1)
+	if (nSelectedItem == -1)
 	{
-		m_oListTasks.DeleteItem(nSelectedItem);
+		return;
 	}
+
+	TASKS* pTask = reinterpret_cast<TASKS*>(m_oListTasks.GetItemData(nSelectedItem));
+	if (pTask->lId != 0)
+	{
+		m_oProjectDetails.recProject.nTotalEffort -= pTask->nEffort;
+		m_oProjectDetails.m_oTaskIdsToDelete.Add(pTask->lId);
+
+		// delete 
+		for (int i = 0; m_oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
+		{
+			if (pTask->lId != m_oProjectDetails.oTasksTypedPtrArray.GetAt(i)->lId)
+			{
+				continue;
+			}
+
+			delete m_oProjectDetails.oTasksTypedPtrArray[i];
+			m_oProjectDetails.oTasksTypedPtrArray[i] = nullptr;
+			m_oProjectDetails.oTasksTypedPtrArray.RemoveAt(i); 
+			break;
+		}
+	}
+	else
+	{
+		m_oProjectDetails.oTasksTypedPtrArray.RemoveAt(nSelectedItem);
+	}
+
+	m_oListTasks.DeleteItem(nSelectedItem);
 }
 
 void CProjectsDialog::VisualizeTask(TASKS& oTask)
@@ -249,6 +276,7 @@ void CProjectsDialog::VisualizeTask(TASKS& oTask)
 	m_oListTasks.SetItemText(nIndex, TASKS_EFFORT_COLUMN, strEffort);
 	CString strState = StateToString((StateEnum)oTask.nState);
 	m_oListTasks.SetItemText(nIndex, TASKS_STATE_COLUMN, strState);
+
 	m_oListTasks.SetItemData(nIndex, (DWORD_PTR)&oTask);
 }
 

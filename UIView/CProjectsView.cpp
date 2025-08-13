@@ -195,12 +195,12 @@ void CProjectsView::OnProjectUpdate()
 	oProject.recProject = pProject->recProject;
 
 	GetDocument()->GetProjectDetails(oProject);
+
 	CProjectsDialog oProjectDialog(oUsersArray, oProject, ViewUpdate);
 
 	if (oProjectDialog.DoModal() == IDOK)
 	{
-		CTasksTypedPtrArray oDeleteTasks;
-		GetDocument()->UpdateProject(oProject, oDeleteTasks);
+		GetDocument()->UpdateProject(oProject);
 	}
 }
 

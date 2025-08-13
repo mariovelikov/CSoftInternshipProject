@@ -77,10 +77,10 @@ bool CProjectsDocument::AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& o
 	return true;
 }
 
-bool CProjectsDocument::UpdateProject(PROJECT_DETAILS& oRecProject, CTasksTypedPtrArray& oDeleteTasks)
+bool CProjectsDocument::UpdateProject(PROJECT_DETAILS& oRecProject)
 {
 	CProjectsAppService oProjectsAppService;
-	if (!oProjectsAppService.UpdateProject(oRecProject, oDeleteTasks))
+	if (!oProjectsAppService.UpdateProject(oRecProject))
 	{
 		return false;
 	}

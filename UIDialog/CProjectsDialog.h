@@ -81,6 +81,8 @@ protected:
 	PROJECT_DETAILS& m_oProjectDetails;
 	ViewActions m_eCurrentAction;
 	int m_nTotalEffort;
+
+	
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
