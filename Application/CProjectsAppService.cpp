@@ -99,8 +99,6 @@ bool CProjectsAppService::GetProjectDetails(PROJECT_DETAILS& oProjectDetails) co
 
 	for (int i = 0; i < oTasks.GetCount(); i++) 
 	{
-		CString name = oTasks[i]->szName;
-
 		if (oTasks.GetAt(i)->lProjectId == oProjectDetails.recProject.lId) 
 		{
 			TASKS oTask = *oTasks[i];
@@ -129,7 +127,12 @@ bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTa
 		return false;
 	}
 
-	oSession.StartTransaction();
+	if (FAILED(oSession.StartTransaction()))
+	{
+		oSession.Close();
+		return false;
+	};
+
 	CProjectsTable oProjetsTable(oSession);
 	CTasksTable oTasksTable(oSession);
 
@@ -155,7 +158,6 @@ bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTa
 	oSession.Commit();
 	oSession.Close();
 	return true;
-	
 };
 
 bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const // 

@@ -75,10 +75,10 @@ struct PROJECTS
 	long lProjectManagerId;
 
 	/// <summary> A variable that stores state of project. </summary>
-	int nState = Active;
+	short nState = Active;
 
 	/// <summary>A variable that stores total effort for all project. </summary>
-	int nTotalEffort = PROJECTS_TOTAL_EFFORT_DEFAULT;
+	long lTotalEffort = PROJECTS_TOTAL_EFFORT_DEFAULT;
 
 	// Constructor 
 	// ----------------
@@ -168,6 +168,34 @@ private:
 		this->SetSize(0);
 	}
 };
+
+class CUsersMap: public CMap<int, int, USERS*, USERS*&>
+{
+public:
+	CUsersMap() {}
+
+	~CUsersMap()
+	{
+		ClearMap();
+	}
+
+private:
+	void ClearMap()
+	{
+		POSITION pos = GetStartPosition();
+		while (pos != nullptr)
+		{
+			int key;
+			USERS* pUser;
+			GetNextAssoc(pos, key, pUser);
+
+			delete pUser; 
+		}
+
+		RemoveAll();
+	}
+};
+
 
 typedef CStructTypedPtrArray<USERS> CUsersTypedPtrArray;
 typedef CStructTypedPtrArray<PROJECTS> CProjectsTypedPtrArray;

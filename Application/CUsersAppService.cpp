@@ -3,25 +3,30 @@
 #include "CUsersTable.h"
 #include "STRUCTURES.h"
 
-bool CUsersAppService::GetAllUsers(CUsersTypedPtrArray& oUserTypedPtrArray) const
+bool CUsersAppService::GetAllUsers(CUsersMap& oUsersMap) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession oSession;
 
 	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		return false;
 	}
 
 	CUsersTable	oUsersTable(oSession);
 
+	CUsersTypedPtrArray oUserTypedPtrArray;
 	if (!oUsersTable.SelectAll(oUserTypedPtrArray))
 	{
 		oSession.Close();
 		return false;
+	}
+
+	// fill map with users
+	for (int i = 0; i < oUserTypedPtrArray.GetCount(); i++)
+	{
+		USERS* pUser = new USERS(*oUserTypedPtrArray[i]);
+		oUsersMap.SetAt(pUser->lId, pUser);
 	}
 
 	oSession.Close();
@@ -30,14 +35,11 @@ bool CUsersAppService::GetAllUsers(CUsersTypedPtrArray& oUserTypedPtrArray) cons
 
 bool CUsersAppService::AddUser(USERS& oRecUser) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession oSession;
 
 	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		return false;
 	}
 

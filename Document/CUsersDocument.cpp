@@ -23,20 +23,20 @@ CUsersDocument::~CUsersDocument()
 // Methods
 // ----------------
 
-CUsersTypedPtrArray& CUsersDocument::GetAllUsers()
+CUsersMap& CUsersDocument::GetAllUsers()
 {
-	if (m_oUsersArray.IsEmpty()) 
+	if (m_oUsersMap.IsEmpty()) 
 	{
 		CUsersAppService oUsersAppService;
 		
-		if (!oUsersAppService.GetAllUsers(m_oUsersArray)) 
+		if (!oUsersAppService.GetAllUsers(m_oUsersMap))
 		{
 			TRACE(_T("Failed to retrieve users from the database.\n"));
-			return m_oUsersArray;
+			return m_oUsersMap;
 		}
 	}
 
-	return m_oUsersArray;
+	return m_oUsersMap;
 }
 
 bool CUsersDocument::AddUser(USERS& oRecUser) 
@@ -48,7 +48,7 @@ bool CUsersDocument::AddUser(USERS& oRecUser)
 		return false;
 	}
 	USERS* pUser = new USERS(oRecUser);
-	m_oUsersArray.Add(pUser);
+	m_oUsersMap.SetAt(pUser->lId, pUser);
 
 	UpdateAllViews(nullptr, (LPARAM)ViewAdd, (CObject*)pUser);
 	return true;
@@ -63,15 +63,15 @@ bool CUsersDocument::UpdateUser(USERS& oRecUser)
 		return false;
 	}
 
-	for (int i = 0; i < m_oUsersArray.GetSize(); ++i) 
-	{
-		if (m_oUsersArray[i]->lId == oRecUser.lId) 
-		{
-			*m_oUsersArray[i] = oRecUser;
-			UpdateAllViews(nullptr, (LPARAM)ViewUpdate, (CObject*)m_oUsersArray[i]);
-			return true;
-		}
-	}
+	//for (int i = 0; i < m_oUsersArray.GetSize(); ++i) 
+	//{
+	//	if (m_oUsersArray[i]->lId == oRecUser.lId) 
+	//	{
+	//		*m_oUsersArray[i] = oRecUser;
+	UpdateAllViews(nullptr, (LPARAM)ViewUpdate, (CObject*)m_oUsersMap[oRecUser.lId]);
+	return true;
+		/*}
+	}*/
 
 	return false;
 }
@@ -85,17 +85,17 @@ bool CUsersDocument::DeleteUser(const long lId)
 		return false;
 	}
 
-	for (int i = 0; i < m_oUsersArray.GetSize(); ++i) 
-	{
-		if (m_oUsersArray[i]->lId == lId) 
-		{
-			delete m_oUsersArray[i];
-			m_oUsersArray.RemoveAt(i);
+	//for (int i = 0; i < m_oUsersArray.GetSize(); ++i) 
+	//{
+	//	if (m_oUsersArray[i]->lId == lId) 
+	//	{
+			delete m_oUsersMap[lId];
+			m_oUsersMap.RemoveKey(lId);
 
 			UpdateAllViews(nullptr, (LPARAM)ViewDelete, nullptr);
 			return true;
-		}
-	}
+		/*}
+	}*/
 	return false;
 }
 

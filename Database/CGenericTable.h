@@ -51,7 +51,7 @@ public:
 	{
 		// Construct the query
 		CString strQuery;
-		strQuery.Format(_T("SELECT * FROM %s WHERE ID = %ld"), m_strTableName,  lID);
+		strQuery.Format(_T("SELECT * FROM %s WITH(NOLOCK) WHERE ID = %ld"), m_strTableName,  lID);
 		HRESULT hResult = m_oCommand.Open(m_oSession, strQuery);
 
 		if (FAILED(hResult))
@@ -110,7 +110,6 @@ public:
 		if (FAILED(hResult)) {
 			PrintError(hResult, _T("Command open failed"));
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 		
@@ -153,7 +152,6 @@ public:
 			PrintError(hResult, _T("Update failed"));
 
 			m_oCommand.Close();
-			//oSession.Close();
 			return false;
 		}
 

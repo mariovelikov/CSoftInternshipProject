@@ -284,17 +284,27 @@ void CUsersView::OnInitialUpdate()
 	oListCtrl.InsertColumn(USER_TABLE_COLUMN_EMAIL, _T("Email"), LVCFMT_LEFT, USER_TABLE_COLUMN_EMAIL_WIDTH);
 	oListCtrl.InsertColumn(USER_TABLE_COLUMN_JOB_TITLE, _T("Jobs Title"), LVCFMT_LEFT, USER_TABLE_COLUMN_JOB_TITLE_WIDTH);
 	 
-	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
+	CUsersMap& oUsersMap = GetDocument()->GetAllUsers();
 
-	for (int i = 0; i < oUsersArray.GetSize(); ++i)
+	POSITION pos = oUsersMap.GetStartPosition();
+	int i = 0;
+
+	while (pos != nullptr)
 	{
-		const USERS* pUser = oUsersArray[i];
+		USERS* pUser = nullptr;
+		int key = 0; // or whatever key type you're using
+
+		oUsersMap.GetNextAssoc(pos, key, pUser); // Advance position and get key-value
+
 		CString strId;
 		strId.Format(_T("%d"), pUser->lId);
 
 		int nItemIndex = oListCtrl.InsertItem(i, strId);
 
 		InsertDataInCtrl(pUser, nItemIndex);
+
+		++i;
 	}
+
 }
 

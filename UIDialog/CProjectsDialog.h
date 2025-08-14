@@ -11,7 +11,7 @@ class UIDialogDLL_EXP CProjectsDialog : public CDialogEx
 	DECLARE_DYNAMIC(CProjectsDialog)
 
 public:
-	CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECT_DETAILS& oProjectDetails, ViewActions eAction, CWnd* pParent = nullptr);   // standard constructor
+	CProjectsDialog(CUsersMap& oUsersMap, PROJECT_DETAILS& oProjectDetails, ViewActions eAction, CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CProjectsDialog();
 
 // Dialog Data
@@ -47,6 +47,9 @@ private:
 	/// <summary>Delete task</summary>
 	void OnDeleteTask();
 
+	/// <summary> Show details on task</summary>
+	void OnViewDetails();
+
 	/// <summary> Validates the data entered in the dialog. </summary>
 	bool ValidateData();
 
@@ -71,7 +74,9 @@ protected:
 	//Members
 	//----------------
 	CListCtrl m_oListTasks;
-	CUsersTypedPtrArray& m_oUsersArray;
+	//CUsersTypedPtrArray& m_oUsersArray;
+	CUsersMap& m_oUsersMap;
+
 
 	CComboBox m_oUsersComboBox;
 	CComboBox m_oStateComboBox;

@@ -11,9 +11,8 @@
 // CTasksDialog dialog
 
 IMPLEMENT_DYNAMIC(CTasksDialog, CDialogEx)
-
-CTasksDialog::CTasksDialog(CUsersTypedPtrArray& oUsersArray, TASKS& oTask, CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_EDB_TASKS_DIALOG, pParent), m_oTask(oTask), m_oUsersArray(oUsersArray)
+CTasksDialog::CTasksDialog(CUsersMap& oUsersMap, TASKS& oTask, ViewActions eCurAction, CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_EDB_TASKS_DIALOG, pParent), m_oTask(oTask), m_oUsersMap(oUsersMap), m_eCurentAction(eCurAction)
 {
 	m_strName = m_oTask.szName;
 	m_strDescription = m_oTask.szDescription;
@@ -54,8 +53,27 @@ BOOL CTasksDialog::OnInitDialog()
 	// Set the edit box to accept only numeric input
 	GetDlgItem(IDC_EDB_TASKS_EFFORT)->ModifyStyle(0, ES_NUMBER);
 
+	switch (m_eCurentAction)
+	{
+	case ViewDetails:
+		DisableConrols();
+		break;
+	default:
+		TRACE(_T("Unknown ViewAction\n"));
+		break;
+	}
+
 	FillComboBoxes();
 	return TRUE;
+}
+
+void CTasksDialog::DisableConrols()
+{
+	m_oStateComboBox.EnableWindow(FALSE);
+	m_oUsersComboBox.EnableWindow(FALSE);
+	GetDlgItem(IDC_EDB_TASKS_NAME)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDB_TASKS_DESCRIPTION)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDB_TASKS_EFFORT)->EnableWindow(FALSE);
 }
 
 void CTasksDialog::OnBnClickedOk()
@@ -124,16 +142,22 @@ void CTasksDialog::FillTaskData()
 void CTasksDialog::FillComboBoxes()
 {
 	// fil the combo box with users
-	for (int i = 0; i < m_oUsersArray.GetCount(); i++)
+	POSITION pos = m_oUsersMap.GetStartPosition();
+	while (pos != nullptr)
 	{
-		if (m_oUsersArray[i] == nullptr)
-			continue;
+		int userId;
+		USERS* pUser;
+		m_oUsersMap.GetNextAssoc(pos, userId, pUser);
 
-		USERS* pUser = m_oUsersArray[i];
 		int index = m_oUsersComboBox.AddString(pUser->szName);
-		m_oUsersComboBox.SetItemData(index, (DWORD_PTR)pUser->lId);
+		m_oUsersComboBox.SetItemData(index, userId);
+
+		if (m_oTask.lUserId != pUser->lId)
+		{
+			continue;
+		}
+		m_oUsersComboBox.SetCurSel(index);
 	}
-	m_oUsersComboBox.SetCurSel(0);
 
 	//fill the list control with State
 	int index = m_oStateComboBox.AddString(_T("Pending"));
@@ -145,5 +169,5 @@ void CTasksDialog::FillComboBoxes()
 	index = m_oStateComboBox.AddString(_T("Ended"));
 	m_oStateComboBox.SetItemData(index, Ended);
 
-	m_oStateComboBox.SetCurSel(0);
+	m_oStateComboBox.SetCurSel(2);
 }

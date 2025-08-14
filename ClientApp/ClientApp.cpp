@@ -63,7 +63,7 @@ BOOL ClientApp::InitInstance()
 	if (!pProjectsDocTemplate)
 		return FALSE;
 
-	//AddDocTemplate(pDocTemplate);
+	AddDocTemplate(pDocTemplate);
 	AddDocTemplate(pProjectsDocTemplate);
 
 	CMainFrame* pMainFrame = new CMainFrame;

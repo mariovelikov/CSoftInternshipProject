@@ -102,10 +102,10 @@ void CProjectsView::InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nIt
 
 void CProjectsView::OnProjectAdd()
 {
-	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
+	CUsersMap& oUsersMap= GetDocument()->GetAllUsers();
 	PROJECT_DETAILS oProjectDetails;
 
-	CProjectsDialog oProjectsDialog(oUsersArray, oProjectDetails, ViewAdd);
+	CProjectsDialog oProjectsDialog(oUsersMap, oProjectDetails, ViewAdd);
 	if (oProjectsDialog.DoModal() == IDOK)
 	{
 		if (!GetDocument()->AddProject(oProjectDetails.recProject, oProjectDetails.oTasksTypedPtrArray))
@@ -133,7 +133,7 @@ void CProjectsView::OnProjectAdd()
 
 void CProjectsView::OnProjectDetails()
 {
-	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
+	CUsersMap& oUsersArray = GetDocument()->GetAllUsers();
 	
 	CListCtrl& oListCtrl = GetListCtrl();
 	int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
@@ -180,7 +180,7 @@ void CProjectsView::OnProjectDelete()
 
 void CProjectsView::OnProjectUpdate()
 {
-	CUsersTypedPtrArray& oUsersArray = GetDocument()->GetAllUsers();
+	CUsersMap& oUsersArray = GetDocument()->GetAllUsers();
 
 	CListCtrl& oListCtrl = GetListCtrl();
 	int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);

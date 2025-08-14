@@ -21,7 +21,7 @@ public:
 public:
 
 	CProjectsViewItemTypedPtrArray& GetAllProjects();
-	CUsersTypedPtrArray& GetAllUsers();
+	CUsersMap& GetAllUsers();
 	
 	bool GetProjectDetails(PROJECT_DETAILS& oProjectDetails);
 	bool AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& oTasks);
@@ -38,6 +38,6 @@ private:
 	CProjectsViewItemTypedPtrArray m_oProjectsViewItemArray;
 	PROJECT_DETAILS m_oProjectDetails;
 	CProjectsTypedPtrArray m_oProjectsArray;
-	CUsersTypedPtrArray m_oUsersArray;
+	CUsersMap m_oUsersMap;
 };
 

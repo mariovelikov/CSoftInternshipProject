@@ -11,6 +11,7 @@
 #define ID_ADD_TASK 1001
 #define ID_UPDATE_TASK 1002
 #define ID_DELETE_TASK 1003
+#define ID_DETAILS_TASK 1004
 
 #define TASKS_ID_COLUMN 0
 #define TASKS_NAME_COLUMN 1
@@ -23,6 +24,7 @@ BEGIN_MESSAGE_MAP(CProjectsDialog, CDialogEx)
 	ON_COMMAND(ID_ADD_TASK, &CProjectsDialog::OnAddTask)
 	ON_COMMAND(ID_UPDATE_TASK, &CProjectsDialog::OnUpdateTask)
 	ON_COMMAND(ID_DELETE_TASK, &CProjectsDialog::OnDeleteTask)
+	ON_COMMAND(ID_DETAILS_TASK, &CProjectsDialog::OnViewDetails)
 	ON_BN_CLICKED(IDOK, &CProjectsDialog::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CProjectsDialog::OnBnClickedCancel)
 END_MESSAGE_MAP()
@@ -31,12 +33,12 @@ IMPLEMENT_DYNAMIC(CProjectsDialog, CDialogEx)
 
 //Constructor / Destructor
 //----------------
-CProjectsDialog::CProjectsDialog(CUsersTypedPtrArray& oUsersArray, PROJECT_DETAILS& oProjectDetails, ViewActions eAction, CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_EDB_PROJECTS_DIALOG, pParent), m_oUsersArray(oUsersArray), m_oProjectDetails(oProjectDetails), m_eCurrentAction(eAction)
+CProjectsDialog::CProjectsDialog(CUsersMap& oUsersMap, PROJECT_DETAILS& oProjectDetails, ViewActions eAction, CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_EDB_PROJECTS_DIALOG, pParent), m_oUsersMap(oUsersMap), m_oProjectDetails(oProjectDetails), m_eCurrentAction(eAction)
 {
 	m_strName = m_oProjectDetails.recProject.szName;
 	m_strDescription = m_oProjectDetails.recProject.szDescription;
-	m_nTotalEffort = m_oProjectDetails.recProject.nTotalEffort;
+	m_nTotalEffort = m_oProjectDetails.recProject.lTotalEffort;
 }
 
 CProjectsDialog::~CProjectsDialog()
@@ -70,8 +72,10 @@ void CProjectsDialog::OnListTasksRightClick(NMHDR* pNMHDR, LRESULT* pResult)
     {
 		oContextMenu.AppendMenuW(MF_STRING, ID_UPDATE_TASK, _T("Update Task"));
 		oContextMenu.AppendMenuW(MF_STRING, ID_DELETE_TASK, _T("Delete Task"));
+		oContextMenu.AppendMenuW(MF_STRING, ID_DETAILS_TASK, _T("View Details"));
 	}
-	else {
+	else 
+	{
 		oContextMenu.AppendMenuW(MF_STRING, ID_ADD_TASK, _T("Add Tasks"));
 	}
 
@@ -152,22 +156,22 @@ void CProjectsDialog::ViewProjectDetails()
 void CProjectsDialog::FillComboBoxes()
 {
 	// fil the combo box with users
-	for (int i = 0; i < m_oUsersArray.GetCount(); i++)
+	POSITION pos = m_oUsersMap.GetStartPosition();
+	while (pos != nullptr)
 	{
-		if (m_oUsersArray[i] == nullptr)
-			continue;
+		int userId;
+		USERS* pUser;
+		m_oUsersMap.GetNextAssoc(pos, userId, pUser);
 
-		USERS* pUser = m_oUsersArray[i];
+		int index = m_oUsersComboBox.AddString(pUser->szName);
+		m_oUsersComboBox.SetItemData(index, userId);
 
-		int nIndex = m_oUsersComboBox.AddString(pUser->szName);
-		if (nIndex != CB_ERR)
+		if (pUser->lId != m_oProjectDetails.recProject.lProjectManagerId)
 		{
-			m_oUsersComboBox.SetItemData(nIndex, static_cast<DWORD_PTR>(pUser->lId));
+			continue;
 		}
+		m_oUsersComboBox.SetCurSel(index);
 	}
-
-	if (m_oUsersComboBox.GetCount() > 0)
-		m_oUsersComboBox.SetCurSel(0);
 
 	int nIndex = m_oStateComboBox.AddString(_T("Active"));
 	m_oStateComboBox.SetItemData(nIndex, Active);
@@ -183,12 +187,12 @@ void CProjectsDialog::OnAddTask()
 {
 	TASKS* oTask = new TASKS();
 
-	CTasksDialog oTasksDialog(m_oUsersArray, *oTask);
+	CTasksDialog oTasksDialog(m_oUsersMap, *oTask);
 	if (oTasksDialog.DoModal() == IDOK)
 	{
 		oTask->lProjectId = m_oProjectDetails.recProject.lId;
 		m_oProjectDetails.oTasksTypedPtrArray.Add(oTask);
-		m_oProjectDetails.recProject.nTotalEffort += oTask->nEffort;
+		m_oProjectDetails.recProject.lTotalEffort += oTask->nEffort;
 		VisualizeTask(*oTask);
 	}
 	else
@@ -206,7 +210,7 @@ void CProjectsDialog::OnUpdateTask()
 	}
 
 	TASKS* pTask = (TASKS*)m_oListTasks.GetItemData(nSelectedItem);
-	CTasksDialog oTasksDialog(m_oUsersArray, *pTask);
+	CTasksDialog oTasksDialog(m_oUsersMap, *pTask);
 
 	if (oTasksDialog.DoModal() != IDOK)
 	{
@@ -214,10 +218,10 @@ void CProjectsDialog::OnUpdateTask()
 	}
 
 	// Sum and set new TotalEffort
-	m_oProjectDetails.recProject.nTotalEffort = 0;
+	m_oProjectDetails.recProject.lTotalEffort = 0;
 	for (int i = 0; i < m_oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
 	{
-		m_oProjectDetails.recProject.nTotalEffort += m_oProjectDetails.oTasksTypedPtrArray.GetAt(i)->nEffort;
+		m_oProjectDetails.recProject.lTotalEffort += m_oProjectDetails.oTasksTypedPtrArray.GetAt(i)->nEffort;
 	}
 
 	VisualizeTask(*pTask, ViewUpdate, nSelectedItem);
@@ -234,7 +238,7 @@ void CProjectsDialog::OnDeleteTask()
 	TASKS* pTask = reinterpret_cast<TASKS*>(m_oListTasks.GetItemData(nSelectedItem));
 	if (pTask->lId != 0)
 	{
-		m_oProjectDetails.recProject.nTotalEffort -= pTask->nEffort;
+		m_oProjectDetails.recProject.lTotalEffort -= pTask->nEffort;
 		m_oProjectDetails.m_oTaskIdsToDelete.Add(pTask->lId);
 
 		// delete 
@@ -257,6 +261,20 @@ void CProjectsDialog::OnDeleteTask()
 	}
 
 	m_oListTasks.DeleteItem(nSelectedItem);
+}
+
+void CProjectsDialog::OnViewDetails()
+{
+	int nSelectedItem = m_oListTasks.GetNextItem(-1, LVNI_SELECTED);
+	if (nSelectedItem == -1)
+	{
+		return;
+	}
+
+	TASKS* pTask = reinterpret_cast<TASKS*>(m_oListTasks.GetItemData(nSelectedItem));
+
+	CTasksDialog oTasksDialog(m_oUsersMap, *pTask, ViewDetails);
+	oTasksDialog.DoModal();
 }
 
 void CProjectsDialog::VisualizeTask(TASKS& oTask, ViewActions eAction, int nSelectedItem)

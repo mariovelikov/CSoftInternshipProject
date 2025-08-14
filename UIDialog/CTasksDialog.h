@@ -1,6 +1,7 @@
 #pragma once
 #include "afxdialogex.h"
 #include "STRUCTURES.h"
+#include "ViewActions.h"
 
 
 // CTasksDialog dialog
@@ -11,7 +12,7 @@ class CTasksDialog : public CDialogEx
 
 public:
 	//CTasksDialog(CWnd* pParent = nullptr);   // standard constructor
-	CTasksDialog(CUsersTypedPtrArray& oUsersArray, TASKS& oTask, CWnd* pParent = nullptr);
+	CTasksDialog(CUsersMap& oUsersMap, TASKS& oTask, ViewActions eCurAction = ViewAdd, CWnd* pParent = nullptr);
 	virtual ~CTasksDialog();
 
 // Dialog Data
@@ -38,6 +39,10 @@ private:
 	/// Fills the combo boxes with users, states, and total effort options.
 	/// </summary>
 	void FillComboBoxes();
+
+	/// <summary> Disable all controls </summary>
+	void DisableConrols();
+
 public:
 
 	//Overrides
@@ -51,7 +56,9 @@ protected:
 	//Members 
 	//----------------
 private:
-	CUsersTypedPtrArray& m_oUsersArray;
+	ViewActions m_eCurentAction;
+	//CUsersTypedPtrArray& m_oUsersArray;
+	CUsersMap& m_oUsersMap;
 	CComboBox m_oUsersComboBox;
 	CComboBox m_oStateComboBox;
 	CString m_strName;

@@ -20,7 +20,7 @@ public:
 	// ----------------
 public:
 
-	CUsersTypedPtrArray& GetAllUsers();
+	CUsersMap& GetAllUsers();
 	bool AddUser(USERS& oRecUser);
 	bool UpdateUser(USERS& oRecUser);
 	bool DeleteUser(const long lId);
@@ -33,5 +33,6 @@ public:
 	// Members
 	// ----------------
 private: 
-	CUsersTypedPtrArray m_oUsersArray;
+	//CUsersTypedPtrArray m_oUsersArray;
+	CUsersMap m_oUsersMap;
 };

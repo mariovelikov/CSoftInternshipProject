@@ -61,15 +61,15 @@ bool CProjectsDocument::AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& o
 	
 	PROJECTS_VIEW_ITEM* pViewItem = new PROJECTS_VIEW_ITEM();
 	pViewItem->recProject = *pProject;
+	_tcscpy_s(pViewItem->szProjectManagerName, (sizeof(pViewItem->szProjectManagerName) / sizeof(pViewItem->szProjectManagerName[0])), m_oUsersMap[pProject->lProjectManagerId]->szName);
 
 	// Set Project Manager name to view item
-	for (int i = 0; i < m_oUsersArray.GetCount(); i++)
+	/*for (int i = 0; i < m_oUsersArray.GetCount(); i++)
 	{
 		if (m_oUsersArray[i]->lId == pProject->lProjectManagerId)
 		{
-			_tcscpy_s(pViewItem->szProjectManagerName, (sizeof(pViewItem->szProjectManagerName) / sizeof(pViewItem->szProjectManagerName[0])), m_oUsersArray[i]->szName);
 		}
-	}
+	}*/
 
 	m_oProjectsViewItemArray.Add(pViewItem);
 	UpdateAllViews(nullptr, (LPARAM)ViewAdd, (CObject*)pViewItem);
@@ -117,20 +117,20 @@ bool CProjectsDocument::DeleteProject(PROJECT_DETAILS& oProjectDetails)
 	return false;
 }
 
-CUsersTypedPtrArray& CProjectsDocument::GetAllUsers()
+CUsersMap& CProjectsDocument::GetAllUsers()
 {
-	if (m_oUsersArray.IsEmpty())
+	if (m_oUsersMap.IsEmpty())
 	{
 		CUsersAppService oProjectsAppService;
-		if (!oProjectsAppService.GetAllUsers(m_oUsersArray))
+		if (!oProjectsAppService.GetAllUsers(m_oUsersMap))
 		{
 			TRACE(_T("Failed to retrieve users from the database.\n"));
-			return m_oUsersArray;
+			return m_oUsersMap;
 		}
-		return m_oUsersArray;
+		return m_oUsersMap;
 	}
 	else {
-		return m_oUsersArray;
+		return m_oUsersMap;
 	}
 }
 
