@@ -4,6 +4,7 @@
 #include "CUsersAppService.h"
 #include "ViewActions.h"
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CProjectsDocument
 
@@ -61,7 +62,8 @@ bool CProjectsDocument::AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& o
 	
 	PROJECTS_VIEW_ITEM* pViewItem = new PROJECTS_VIEW_ITEM();
 	pViewItem->recProject = *pProject;
-	_tcscpy_s(pViewItem->szProjectManagerName, (sizeof(pViewItem->szProjectManagerName) / sizeof(pViewItem->szProjectManagerName[0])), m_oUsersMap[pProject->lProjectManagerId]->szName);
+
+	_tcscpy_s(pViewItem->szProjectManagerName, _countof(pViewItem->szProjectManagerName), m_oUsersMap[pProject->lProjectManagerId]->szName);
 
 	m_oProjectsViewItemArray.Add(pViewItem);
 	UpdateAllViews(nullptr, (LPARAM)ViewAdd, (CObject*)pViewItem);
@@ -77,7 +79,7 @@ bool CProjectsDocument::UpdateProject(PROJECT_DETAILS& oRecProject, PROJECTS_VIE
 		return false;
 	}
 
-	_tcscpy_s(pProjectViewItem->szProjectManagerName, 64, strProjectManagerName);
+	_tcscpy_s(pProjectViewItem->szProjectManagerName, _countof(pProjectViewItem->szProjectManagerName), strProjectManagerName);
 
 	for (int i = 0; i < m_oProjectsViewItemArray.GetCount(); ++i)
 	{

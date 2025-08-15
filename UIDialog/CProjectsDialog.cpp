@@ -79,6 +79,13 @@ void CProjectsDialog::OnListTasksRightClick(NMHDR* pNMHDR, LRESULT* pResult)
 		oContextMenu.AppendMenuW(MF_STRING, ID_ADD_TASK, _T("Add Tasks"));
 	}
 
+	if (m_eCurrentAction == ViewDetails)
+	{
+		oContextMenu.RemoveMenu(ID_UPDATE_TASK, MF_STRING);
+		oContextMenu.RemoveMenu(ID_DELETE_TASK, MF_STRING);
+		oContextMenu.RemoveMenu(ID_ADD_TASK, MF_STRING);
+	}
+
 	oContextMenu.TrackPopupMenu(
 		TPM_LEFTALIGN | TPM_RIGHTBUTTON,
 		oPoint.x, oPoint.y, this);
@@ -135,7 +142,7 @@ void CProjectsDialog::ViewProjectDetails()
 	for (int i = 0; i < m_oStateComboBox.GetCount(); ++i)
 	{
 		DWORD_PTR data = m_oStateComboBox.GetItemData(i);
-		if ((ProjectsStateEnum)data == m_oProjectDetails.recProject.sState)
+		if ((SprxProjectsState)data == m_oProjectDetails.recProject.sState)
 		{
 			m_oStateComboBox.SetCurSel(i);
 			break;
@@ -174,10 +181,10 @@ void CProjectsDialog::FillComboBoxes()
 	}
 
 	int nIndex = m_oStateComboBox.AddString(_T("Active"));
-	m_oStateComboBox.SetItemData(nIndex, Active);
+	m_oStateComboBox.SetItemData(nIndex, SprxActive);
 
 	nIndex = m_oStateComboBox.AddString(_T("Finished"));
-	m_oStateComboBox.SetItemData(nIndex, Finished);
+	m_oStateComboBox.SetItemData(nIndex, SprxFinished);
 
 	if (m_oStateComboBox.GetCount() > 0)
 		m_oStateComboBox.SetCurSel(0);
@@ -300,7 +307,7 @@ void CProjectsDialog::VisualizeTask(TASKS& oTask, ViewActions eAction, int nSele
 	m_oListTasks.SetItemText(nIndex, TASKS_NAME_COLUMN, oTask.szName);
 	m_oListTasks.SetItemText(nIndex, TASKS_DESCRIPTION_COLUMN, oTask.szDescription);
 	m_oListTasks.SetItemText(nIndex, TASKS_EFFORT_COLUMN, strEffort);
-	CString strState = StateToString((StateEnum)oTask.sState);
+	CString strState = StateToString((SprxTasksState)oTask.sState);
 	m_oListTasks.SetItemText(nIndex, TASKS_STATE_COLUMN, strState);
 
 	m_oListTasks.SetItemData(nIndex, (DWORD_PTR)&oTask);
@@ -329,19 +336,19 @@ void CProjectsDialog::FillProjectData()
 		m_oProjectDetails.recProject.sState = static_cast<int>(m_oStateComboBox.GetItemData(nSelected));
 	}
 
-	_tcscpy_s(m_oProjectDetails.recProject.szName, PROJECTS_NAME_LENGTH, m_strName);
-	_tcscpy_s(m_oProjectDetails.recProject.szDescription, PROJECTS_DESCRIPTION_LENGTH, m_strDescription);
+	_tcscpy_s(m_oProjectDetails.recProject.szName, _countof(m_oProjectDetails.recProject.szName), m_strName);
+	_tcscpy_s(m_oProjectDetails.recProject.szDescription, _countof(m_oProjectDetails.recProject.szDescription), m_strDescription);
 }
 
-CString CProjectsDialog::StateToString(StateEnum state)
+CString CProjectsDialog::StateToString(SprxTasksState state)
 {
 	switch (state)
 	{
-	case Pending:
+	case SprxPending:
 		return _T("Pending");
-	case InProgress:
+	case SprxInProgress:
 		return _T("InProgress");
-	case Ended:
+	case SprxEnded:
 		return _T("Ended");
 	default:
 		return _T("Unknown");

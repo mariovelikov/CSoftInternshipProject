@@ -6,26 +6,22 @@
 #define EMAIL_LENGTH 128
 #define JOBS_TITLE_LENGTH 128
 
-enum StateEnum
+enum SprxTasksState
 {
-	Pending = 1,
-	InProgress = 2,
-	Ended = 3
+	SprxPending = 1,
+	SprxInProgress = 2,
+	SprxEnded = 3
 };
 
-enum ProjectsStateEnum
+enum SprxProjectsState
 {
-	Active = 1,
-	Finished = 2
+	SprxActive = 1,
+	SprxFinished = 2
 };
 
 /// <summary> Struct Users </summary>
 struct USERS
 {
-
-	// Members
-	//-------------
-
 	/// <summary> Unique Id of user </summary>
 	long lId;
 
@@ -41,8 +37,6 @@ struct USERS
 	/// <summary> Job title of User </summary>
 	TCHAR szJobTitle[JOBS_TITLE_LENGTH];
 
-	// Constructor 
-	// ----------------
 	/// <summary> Constructor </summary>
 	USERS()
 	{
@@ -75,13 +69,11 @@ struct PROJECTS
 	long lProjectManagerId;
 
 	/// <summary> A variable that stores state of project. </summary>
-	short sState = Active;
+	short sState = SprxActive;
 
 	/// <summary>A variable that stores total effort for all project. </summary>
 	long lTotalEffort = PROJECTS_TOTAL_EFFORT_DEFAULT;
 
-	// Constructor 
-	// ----------------
 	/// <summary> Constructor </summary>
 	PROJECTS()
 	{
@@ -114,13 +106,11 @@ struct TASKS
 	long lUserId;
 
 	/// <summary> Declares and initializes an integer variable representing the state of a project. </summary>
-	short sState = Pending;
+	short sState = SprxPending;
 
 	/// <summary> Stores the total effort value as int. </summary>
 	long lEffort;
 
-	// Constructor 
-	// ----------------
 	/// <summary> Constructor </summary>
 	TASKS()
 	{
@@ -137,8 +127,6 @@ struct PROJECTS_VIEW_ITEM
 	/// <summary> Project manager's name associated with the project. </summary>
 	TCHAR szProjectManagerName[NAME_LENGTH];
 
-	// Constructor 
-	// ----------------
 	PROJECTS_VIEW_ITEM()
 	{
 		SecureZeroMemory(this, sizeof(*this));

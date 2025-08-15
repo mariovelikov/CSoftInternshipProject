@@ -133,8 +133,8 @@ void CTasksDialog::FillTaskData()
 	
 	m_oTask.sState = (int)m_oStateComboBox.GetItemData(m_oStateComboBox.GetCurSel());
 	m_oTask.lEffort = m_nEffort;
-	_tcscpy_s(m_oTask.szName, TASKS_NAME_LENGTH, m_strName);
-	_tcscpy_s(m_oTask.szDescription, TASKS_DESCRIPTION_LENGTH, m_strDescription);
+	_tcscpy_s(m_oTask.szName, _countof(m_oTask.szName), m_strName);
+	_tcscpy_s(m_oTask.szDescription, _countof(m_oTask.szName), m_strDescription);
 
 	return;
 }
@@ -161,13 +161,13 @@ void CTasksDialog::FillComboBoxes()
 
 	//fill the list control with State
 	int index = m_oStateComboBox.AddString(_T("Pending"));
-	m_oStateComboBox.SetItemData(index, Pending);
+	m_oStateComboBox.SetItemData(index, SprxPending);
 
 	index = m_oStateComboBox.AddString(_T("InProgress"));
-	m_oStateComboBox.SetItemData(index, InProgress);
+	m_oStateComboBox.SetItemData(index, SprxInProgress);
 
 	index = m_oStateComboBox.AddString(_T("Ended"));
-	m_oStateComboBox.SetItemData(index, Ended);
+	m_oStateComboBox.SetItemData(index, SprxEnded);
 
 	m_oStateComboBox.SetCurSel(2);
 }

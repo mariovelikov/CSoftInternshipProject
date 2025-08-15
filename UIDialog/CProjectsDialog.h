@@ -22,11 +22,11 @@ public:
 	//----------------
 private:
 	/// <summary>
-	/// Converts the StateEnum to a string representation.
+	/// Converts the SprxTasksState to a string representation.
 	/// </summary>
 	/// <param name="state"></param>
 	/// <returns></returns>
-	CString StateToString(StateEnum state);
+	CString StateToString(SprxTasksState state);
 
 	/// <summary>Fill table with tasks</summary>
 	void FillTasksInTable();
