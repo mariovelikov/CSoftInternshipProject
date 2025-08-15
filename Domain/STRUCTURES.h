@@ -75,7 +75,7 @@ struct PROJECTS
 	long lProjectManagerId;
 
 	/// <summary> A variable that stores state of project. </summary>
-	short nState = Active;
+	short sState = Active;
 
 	/// <summary>A variable that stores total effort for all project. </summary>
 	long lTotalEffort = PROJECTS_TOTAL_EFFORT_DEFAULT;
@@ -114,10 +114,10 @@ struct TASKS
 	long lUserId;
 
 	/// <summary> Declares and initializes an integer variable representing the state of a project. </summary>
-	int nState = Pending;
+	short sState = Pending;
 
 	/// <summary> Stores the total effort value as int. </summary>
-	int nEffort;
+	long lEffort;
 
 	// Constructor 
 	// ----------------

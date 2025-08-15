@@ -131,11 +131,11 @@ void CProjectsDialog::ViewProjectDetails()
 {
 	FillTasksInTable();
 
-	// Set the correct selection based on m_oProjectDetails.recProject.nState
+	// Set the correct selection based on m_oProjectDetails.recProject.sState
 	for (int i = 0; i < m_oStateComboBox.GetCount(); ++i)
 	{
 		DWORD_PTR data = m_oStateComboBox.GetItemData(i);
-		if ((ProjectsStateEnum)data == m_oProjectDetails.recProject.nState)
+		if ((ProjectsStateEnum)data == m_oProjectDetails.recProject.sState)
 		{
 			m_oStateComboBox.SetCurSel(i);
 			break;
@@ -192,7 +192,7 @@ void CProjectsDialog::OnAddTask()
 	{
 		oTask->lProjectId = m_oProjectDetails.recProject.lId;
 		m_oProjectDetails.oTasksTypedPtrArray.Add(oTask);
-		m_oProjectDetails.recProject.lTotalEffort += oTask->nEffort;
+		m_oProjectDetails.recProject.lTotalEffort += oTask->lEffort;
 		VisualizeTask(*oTask);
 	}
 	else
@@ -221,7 +221,7 @@ void CProjectsDialog::OnUpdateTask()
 	m_oProjectDetails.recProject.lTotalEffort = 0;
 	for (int i = 0; i < m_oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
 	{
-		m_oProjectDetails.recProject.lTotalEffort += m_oProjectDetails.oTasksTypedPtrArray.GetAt(i)->nEffort;
+		m_oProjectDetails.recProject.lTotalEffort += m_oProjectDetails.oTasksTypedPtrArray.GetAt(i)->lEffort;
 	}
 
 	VisualizeTask(*pTask, ViewUpdate, nSelectedItem);
@@ -238,7 +238,7 @@ void CProjectsDialog::OnDeleteTask()
 	TASKS* pTask = reinterpret_cast<TASKS*>(m_oListTasks.GetItemData(nSelectedItem));
 	if (pTask->lId != 0)
 	{
-		m_oProjectDetails.recProject.lTotalEffort -= pTask->nEffort;
+		m_oProjectDetails.recProject.lTotalEffort -= pTask->lEffort;
 		m_oProjectDetails.m_oTaskIdsToDelete.Add(pTask->lId);
 
 		// delete 
@@ -291,7 +291,7 @@ void CProjectsDialog::VisualizeTask(TASKS& oTask, ViewActions eAction, int nSele
 	}
 
 	CString strEffort;
-	strEffort.Format(_T("%d"), oTask.nEffort);
+	strEffort.Format(_T("%d"), oTask.lEffort);
 
 	CString strTaskId;
 	strTaskId.Format(_T("%d"), oTask.lId);
@@ -300,7 +300,7 @@ void CProjectsDialog::VisualizeTask(TASKS& oTask, ViewActions eAction, int nSele
 	m_oListTasks.SetItemText(nIndex, TASKS_NAME_COLUMN, oTask.szName);
 	m_oListTasks.SetItemText(nIndex, TASKS_DESCRIPTION_COLUMN, oTask.szDescription);
 	m_oListTasks.SetItemText(nIndex, TASKS_EFFORT_COLUMN, strEffort);
-	CString strState = StateToString((StateEnum)oTask.nState);
+	CString strState = StateToString((StateEnum)oTask.sState);
 	m_oListTasks.SetItemText(nIndex, TASKS_STATE_COLUMN, strState);
 
 	m_oListTasks.SetItemData(nIndex, (DWORD_PTR)&oTask);
@@ -326,7 +326,7 @@ void CProjectsDialog::FillProjectData()
 
 	nSelected = m_oStateComboBox.GetCurSel();
 	if (nSelected != CB_ERR) {
-		m_oProjectDetails.recProject.nState = static_cast<int>(m_oStateComboBox.GetItemData(nSelected));
+		m_oProjectDetails.recProject.sState = static_cast<int>(m_oStateComboBox.GetItemData(nSelected));
 	}
 
 	_tcscpy_s(m_oProjectDetails.recProject.szName, PROJECTS_NAME_LENGTH, m_strName);

@@ -25,7 +25,7 @@ public:
 	
 	bool GetProjectDetails(PROJECT_DETAILS& oProjectDetails);
 	bool AddProject(PROJECTS& oRecProject, CTasksTypedPtrArray& oTasks);
-	bool UpdateProject(PROJECT_DETAILS& oRecProject);
+	bool UpdateProject(PROJECT_DETAILS& oRecProject, PROJECTS_VIEW_ITEM* pProjectViewItem, CString strProjectManagerName);
 	bool DeleteProject(PROJECT_DETAILS& oProjectDetails);
 	// Overrides
 	// ----------------

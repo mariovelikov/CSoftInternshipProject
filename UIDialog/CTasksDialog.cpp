@@ -16,7 +16,7 @@ CTasksDialog::CTasksDialog(CUsersMap& oUsersMap, TASKS& oTask, ViewActions eCurA
 {
 	m_strName = m_oTask.szName;
 	m_strDescription = m_oTask.szDescription;
-	m_nEffort = m_oTask.nEffort;
+	m_nEffort = m_oTask.lEffort;
 }
 
 CTasksDialog::~CTasksDialog()
@@ -131,8 +131,8 @@ void CTasksDialog::FillTaskData()
 		m_oTask.lUserId = static_cast<long>(m_oUsersComboBox.GetItemData(nSelected));
 	}
 	
-	m_oTask.nState = (int)m_oStateComboBox.GetItemData(m_oStateComboBox.GetCurSel());
-	m_oTask.nEffort = m_nEffort;
+	m_oTask.sState = (int)m_oStateComboBox.GetItemData(m_oStateComboBox.GetCurSel());
+	m_oTask.lEffort = m_nEffort;
 	_tcscpy_s(m_oTask.szName, TASKS_NAME_LENGTH, m_strName);
 	_tcscpy_s(m_oTask.szDescription, TASKS_DESCRIPTION_LENGTH, m_strDescription);
 

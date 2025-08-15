@@ -180,7 +180,7 @@ void CProjectsView::OnProjectDelete()
 
 void CProjectsView::OnProjectUpdate()
 {
-	CUsersMap& oUsersArray = GetDocument()->GetAllUsers();
+	CUsersMap& oUsersMap = GetDocument()->GetAllUsers();
 
 	CListCtrl& oListCtrl = GetListCtrl();
 	int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
@@ -195,13 +195,18 @@ void CProjectsView::OnProjectUpdate()
 	oProject.recProject = pProject->recProject;
 
 	GetDocument()->GetProjectDetails(oProject);
+	CProjectsDialog oProjectDialog(oUsersMap, oProject, ViewUpdate);
 
-	CProjectsDialog oProjectDialog(oUsersArray, oProject, ViewUpdate);
-
-	if (oProjectDialog.DoModal() == IDOK)
+	if (oProjectDialog.DoModal() != IDOK)
 	{
-		GetDocument()->UpdateProject(oProject);
+		return;
 	}
+
+	CString strName = oUsersMap[oProject.recProject.lProjectManagerId]->szName;
+	if (!GetDocument()->UpdateProject(oProject, pProject, strName))
+	{
+		AfxMessageBox(_T("Failed to update the project. Please check the input and try again."));
+	};
 }
 
 void CProjectsView::OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult)
