@@ -101,16 +101,15 @@ bool CProjectsDocument::DeleteProject(PROJECT_DETAILS& oProjectDetails)
 		return false;
 	}
 
-	for (int i = 0; i < m_oProjectsArray.GetCount(); ++i)
+	for (int i = 0; i < m_oProjectsViewItemArray.GetCount(); ++i)
 	{
-		if (m_oProjectsArray[i]->lId == oProjectDetails.recProject.lId)
+		if (m_oProjectsViewItemArray[i]->recProject.lId == oProjectDetails.recProject.lId)
 		{
-			m_oProjectsArray.RemoveAt(i);
+			m_oProjectsViewItemArray.RemoveAt(i);
 			UpdateAllViews(nullptr, (LPARAM)ViewDelete, nullptr);
 			return true;
 		}
 	}
-	return false;
 }
 
 CUsersMap& CProjectsDocument::GetAllUsers()

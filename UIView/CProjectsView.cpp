@@ -171,7 +171,8 @@ void CProjectsView::OnProjectDelete()
 
 		GetDocument()->GetProjectDetails(oProject);
 
-		if (!GetDocument()->DeleteProject(oProject))
+		bool bDeleted = GetDocument()->DeleteProject(oProject);
+		if (!bDeleted)
 		{
 			AfxMessageBox(_T("Failed to delete project with tasks."));
 		}

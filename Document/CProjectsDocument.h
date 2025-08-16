@@ -36,7 +36,6 @@ public:
 	// ----------------
 private:
 	CProjectsViewItemTypedPtrArray m_oProjectsViewItemArray;
-	PROJECT_DETAILS m_oProjectDetails;
 	CProjectsTypedPtrArray m_oProjectsArray;
 	CUsersMap m_oUsersMap;
 };
