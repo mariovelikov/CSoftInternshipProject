@@ -4,5 +4,5 @@
 class CTasksTable : public CGenericTable<TASKS>
 {
 public:
-	CTasksTable(CSession& oSession) : CGenericTable<TASKS>(_T("TASKS"), oSession) {};
+	CTasksTable(CSession* oSession) : CGenericTable<TASKS>(_T("TASKS"), oSession) {};
 };

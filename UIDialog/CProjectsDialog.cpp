@@ -59,6 +59,40 @@ void CProjectsDialog::DoDataExchange(CDataExchange* pDX)
 	DDV_MaxChars(pDX, m_strDescription, TASKS_DESCRIPTION_LENGTH);
 }
 
+BOOL CProjectsDialog::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	m_oListTasks.InsertColumn(TASKS_ID_COLUMN, _T("ID"), LVCFMT_LEFT, 50);
+	m_oListTasks.InsertColumn(TASKS_NAME_COLUMN, _T("Name"), LVCFMT_LEFT, 100);
+	m_oListTasks.InsertColumn(TASKS_DESCRIPTION_COLUMN, _T("Description"), LVCFMT_LEFT, 150);
+	m_oListTasks.InsertColumn(TASKS_EFFORT_COLUMN, _T("Effort"), LVCFMT_LEFT, 100);
+	m_oListTasks.InsertColumn(TASKS_STATE_COLUMN, _T("State"), LVCFMT_LEFT, 100);
+
+	m_oListTasks.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+
+	m_oUsersComboBox.ModifyStyle(CBS_SORT, 0);
+
+	FillComboBoxes();
+
+	switch (m_eCurrentAction)
+	{
+	case ViewDetails:
+		ViewProjectDetails();
+		break;
+
+	case ViewUpdate:
+		FillTasksInTable();
+		break;
+
+	default:
+		break;
+	}
+
+	GetDlgItem(IDC_EDB_PROJECTS_NAME)->SetFocus();
+	return FALSE;
+}
+
 void CProjectsDialog::OnListTasksRightClick(NMHDR* pNMHDR, LRESULT* pResult)
 {
     CPoint oPoint;
@@ -92,38 +126,6 @@ void CProjectsDialog::OnListTasksRightClick(NMHDR* pNMHDR, LRESULT* pResult)
 
     if (pResult)
         *pResult = 0;
-}
-
-BOOL CProjectsDialog::OnInitDialog()
-{
-	CDialogEx::OnInitDialog();
-
-	m_oListTasks.InsertColumn(TASKS_ID_COLUMN, _T("ID"), LVCFMT_LEFT, 50);
-	m_oListTasks.InsertColumn(TASKS_NAME_COLUMN, _T("Name"), LVCFMT_LEFT, 100);
-	m_oListTasks.InsertColumn(TASKS_DESCRIPTION_COLUMN, _T("Description"), LVCFMT_LEFT, 150);
-	m_oListTasks.InsertColumn(TASKS_EFFORT_COLUMN, _T("Effort"), LVCFMT_LEFT, 100);
-	m_oListTasks.InsertColumn(TASKS_STATE_COLUMN, _T("State"), LVCFMT_LEFT, 100);
-
-	m_oListTasks.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-
-	m_oUsersComboBox.ModifyStyle(CBS_SORT, 0);
-
-	FillComboBoxes();
-
-	switch (m_eCurrentAction)
-	{
-	case ViewDetails:
-		ViewProjectDetails();
-		break;
-
-	case ViewUpdate:
-		FillTasksInTable();
-
-	default:
-		break;
-	}
-
-	return TRUE;
 }
 
 void CProjectsDialog::FillTasksInTable()
@@ -195,17 +197,33 @@ void CProjectsDialog::OnAddTask()
 	TASKS* oTask = new TASKS();
 
 	CTasksDialog oTasksDialog(m_oUsersMap, *oTask);
-	if (oTasksDialog.DoModal() == IDOK)
-	{
-		oTask->lProjectId = m_oProjectDetails.recProject.lId;
-		m_oProjectDetails.oTasksTypedPtrArray.Add(oTask);
-		m_oProjectDetails.recProject.lTotalEffort += oTask->lEffort;
-		VisualizeTask(*oTask);
-	}
-	else
+	if (oTasksDialog.DoModal() != IDOK)
 	{
 		AfxMessageBox(_T("No task was added."));
+		return;
 	}
+
+	// check if Project have task with same name
+	for (int i = 0; i < m_oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
+	{
+		CString strOldTaskName = m_oProjectDetails.oTasksTypedPtrArray.GetAt(i)->szName;
+		CString strCurrentTaskName = oTask->szName;
+
+		strOldTaskName.Trim();
+		strCurrentTaskName.Trim();
+
+		if (_tcscmp(strOldTaskName, strCurrentTaskName) == 0)
+		{
+			AfxMessageBox(_T("Project has task with same name."));
+			OnAddTask();
+			return;
+		}
+	}
+
+	oTask->lProjectId = m_oProjectDetails.recProject.lId;
+	m_oProjectDetails.oTasksTypedPtrArray.Add(oTask);
+	m_oProjectDetails.recProject.lTotalEffort += oTask->lEffort;
+	VisualizeTask(*oTask);
 }
 
 void CProjectsDialog::OnUpdateTask() 

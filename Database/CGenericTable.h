@@ -14,7 +14,7 @@ template <typename T>
 class CGenericTable
 {
 public:
-	CGenericTable(CString strTableName, CSession& oSession) : m_strTableName(strTableName), m_oSession(oSession){};
+	CGenericTable(CString strTableName, CSession* oSession = nullptr) : m_strTableName(strTableName), m_oSession(*oSession){};
 	bool SelectAll(CStructTypedPtrArray<T>& oRecordsArray)
 	{
 		// Create SQL query to select all users

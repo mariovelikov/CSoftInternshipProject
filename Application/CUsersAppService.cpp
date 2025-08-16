@@ -6,19 +6,19 @@
 bool CUsersAppService::GetAllUsers(CUsersMap& oUsersMap) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		return false;
 	}
 
-	CUsersTable	oUsersTable(oSession);
+	CUsersTable	oUsersTable(pSession);
 
 	CUsersTypedPtrArray oUserTypedPtrArray;
 	if (!oUsersTable.SelectAll(oUserTypedPtrArray))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
 
@@ -29,28 +29,28 @@ bool CUsersAppService::GetAllUsers(CUsersMap& oUsersMap) const
 		oUsersMap.SetAt(pUser->lId, pUser);
 	}
 
-	oSession.Close();
+	pSession->Close();
 	return true;
 }	
 
 bool CUsersAppService::AddUser(USERS& oRecUser) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		return false;
 	}
 
-	CUsersTable oUsersTable(oSession);
+	CUsersTable oUsersTable(pSession);
 	if (!oUsersTable.Insert(oRecUser))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
 
-	oSession.Close();
+	pSession->Close();
 	return true;
 }
 
@@ -58,24 +58,24 @@ bool CUsersAppService::UpdateUser(USERS& oRecUser) const
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		//PrintError(hResult, _T("Open session failed"));
 
 		return false;
 	}
 
-	CUsersTable oUsersTable(oSession);
+	CUsersTable oUsersTable(pSession);
 
 	if (!oUsersTable.UpdateWhereID(oRecUser.lId, oRecUser))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
 
-	oSession.Close();
+	pSession->Close();
 	return true;
 }
 
@@ -83,23 +83,23 @@ bool CUsersAppService::DeleteUser(const long lID) const
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		//PrintError(hResult, _T("Open session failed"));
 
 		return false;
 	}
 
-	CUsersTable oUsersTable(oSession);
+	CUsersTable oUsersTable(pSession);
 
 	if (!oUsersTable.DeleteWhereID(lID))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
 
-	oSession.Close();
+	pSession->Close();
 	return true;
 }

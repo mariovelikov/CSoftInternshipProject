@@ -53,6 +53,7 @@ BOOL CTasksDialog::OnInitDialog()
 	// Set the edit box to accept only numeric input
 	GetDlgItem(IDC_EDB_TASKS_EFFORT)->ModifyStyle(0, ES_NUMBER);
 
+
 	switch (m_eCurentAction)
 	{
 	case ViewDetails:
@@ -64,7 +65,9 @@ BOOL CTasksDialog::OnInitDialog()
 	}
 
 	FillComboBoxes();
-	return TRUE;
+
+	GetDlgItem(IDC_EDB_TASKS_NAME)->SetFocus();
+	return FALSE;
 }
 
 void CTasksDialog::DisableConrols()

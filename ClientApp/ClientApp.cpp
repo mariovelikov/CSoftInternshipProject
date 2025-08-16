@@ -50,7 +50,7 @@ BOOL ClientApp::InitInstance()
 		RUNTIME_CLASS(CUsersDocument),
 		RUNTIME_CLASS(CChildFrame),
 		RUNTIME_CLASS(CUsersView));
-	
+
 	CMultiDocTemplate* pProjectsDocTemplate = nullptr;
 	pProjectsDocTemplate = new CMultiDocTemplate(IDR_CSoftInternshipProjectTYPE,
 		RUNTIME_CLASS(CProjectsDocument),

@@ -74,9 +74,7 @@ protected:
 	//Members
 	//----------------
 	CListCtrl m_oListTasks;
-	//CUsersTypedPtrArray& m_oUsersArray;
 	CUsersMap& m_oUsersMap;
-
 
 	CComboBox m_oUsersComboBox;
 	CComboBox m_oStateComboBox;

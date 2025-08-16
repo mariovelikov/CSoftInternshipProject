@@ -7,23 +7,23 @@ bool CTasksAppService::GetAllTasks(CTasksTypedPtrArray& oTasksTypedPtrArray) con
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		//PrintError(hResult, _T("Open session failed"));
 
 		return false;
 	}
 
-	CTasksTable oTasksTable(oSession);
+	CTasksTable oTasksTable(pSession);
 
 	if (!oTasksTable.SelectAll(oTasksTypedPtrArray))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
-	oSession.Close();
+	pSession->Close();
 	return true;
 };
 
@@ -31,23 +31,23 @@ bool CTasksAppService::AddTask(TASKS& oReccord) const
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		//PrintError(hResult, _T("Open session failed"));
 
 		return false;
 	}
 
-	CTasksTable oTasksTable(oSession);
+	CTasksTable oTasksTable(pSession);
 	
 	if (!oTasksTable.Insert(oReccord))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
-	oSession.Close();
+	pSession->Close();
 	return true;
 };
 
@@ -55,23 +55,23 @@ bool CTasksAppService::UpdateTask(TASKS& oRecord) const
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		//PrintError(hResult, _T("Open session failed"));
 
 		return false;
 	}
 
-	CTasksTable oTasksTable(oSession);
+	CTasksTable oTasksTable(pSession);
 
 	if (!oTasksTable.UpdateWhereID(oRecord.lId, oRecord))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
-	oSession.Close();
+	pSession->Close();
 	return true;
 };
 
@@ -79,22 +79,22 @@ bool CTasksAppService::DeleteTask(const long lID) const
 {
 	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
 	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
-	CSession oSession;
+	CSession* pSession = new CSession();
 
-	HRESULT hResult = oSession.Open(oDataSource);
+	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		//PrintError(hResult, _T("Open session failed"));
 
 		return false;
 	}
 
-	CTasksTable oTasksTable(oSession);
+	CTasksTable oTasksTable(pSession);
 
 	if (!oTasksTable.DeleteWhereID(lID))
 	{
-		oSession.Close();
+		pSession->Close();
 		return false;
 	}
-	oSession.Close();
+	pSession->Close();
 	return true;
 };

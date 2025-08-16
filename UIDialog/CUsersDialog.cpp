@@ -42,7 +42,8 @@ BOOL CUsersDialog::OnInitDialog()
 		SetReadOnlyControls();
 	}
 
-	return TRUE;
+	GetDlgItem(EDB_NAME)->SetFocus();
+	return FALSE;
 }
 
 
