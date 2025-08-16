@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Accessors">
+      <UniqueIdentifier>{57a8a3fa-ccd0-4d5c-8a39-0c8bd8d6826b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tables">
+      <UniqueIdentifier>{8918c5d8-e0f4-4a97-b881-40472c0131b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Database.cpp">
@@ -49,32 +55,32 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CUsersAccessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CUsersTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DataSourceConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CGenericAccessor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accessors</Filter>
     </ClInclude>
     <ClInclude Include="CProjectsAccessor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accessors</Filter>
     </ClInclude>
     <ClInclude Include="CTasksAccessor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Accessors</Filter>
+    </ClInclude>
+    <ClInclude Include="CUsersAccessor.h">
+      <Filter>Header Files\Accessors</Filter>
     </ClInclude>
     <ClInclude Include="CGenericTable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Tables</Filter>
     </ClInclude>
     <ClInclude Include="CProjectsTable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Tables</Filter>
     </ClInclude>
     <ClInclude Include="CTasksTable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="CUsersTable.h">
+      <Filter>Header Files\Tables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

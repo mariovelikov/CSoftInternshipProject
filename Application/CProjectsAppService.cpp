@@ -8,14 +8,11 @@
 
 bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjectsViewItemArray) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		return false;
 	}
 
@@ -76,8 +73,7 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjec
 
 bool CProjectsAppService::GetProjectDetails(PROJECT_DETAILS& oProjectDetails) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
@@ -155,15 +151,19 @@ bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTa
 		};
 	}
 
-	pSession->Commit();
+	if (FAILED(pSession->Commit()))
+	{
+		pSession->Close();
+		return false;
+	};
+
 	pSession->Close();
 	return true;
 };
 
 bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const // 
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
@@ -173,7 +173,11 @@ bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const //
 		return false;
 	}
 
-	pSession->StartTransaction();
+	if (FAILED(pSession->StartTransaction()))
+	{
+		pSession->Close();
+		return false;
+	};
 
 	CTasksTable oTasksTable(pSession);
 
@@ -220,7 +224,12 @@ bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const //
 		return false;
 	}
 
-	pSession->Commit();
+	if (FAILED(pSession->Commit()))
+	{
+		pSession->Close();
+		return false;
+	};
+
 	pSession->Close();
 	return true;
 };
@@ -236,7 +245,12 @@ bool CProjectsAppService::DeleteProject(const PROJECT_DETAILS& oProjectDetails) 
 		return false;
 	}
 
-	pSession->StartTransaction();
+	if (FAILED(pSession->StartTransaction()))
+	{
+		pSession->Close();
+		return false;
+	};
+
 	CTasksTable oTasksTable(pSession);
 	
 	//delete all tasks associated with the project
@@ -258,7 +272,12 @@ bool CProjectsAppService::DeleteProject(const PROJECT_DETAILS& oProjectDetails) 
 		return false;
 	}
 
-	pSession->Commit();
+	if (FAILED(pSession->Commit()))
+	{
+		pSession->Close();
+		return false;
+	};
+
 	pSession->Close();
 	return true;
 };

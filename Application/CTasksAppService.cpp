@@ -5,14 +5,11 @@
 
 bool CTasksAppService::GetAllTasks(CTasksTypedPtrArray& oTasksTypedPtrArray) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		return false;
 	}
 
@@ -29,14 +26,11 @@ bool CTasksAppService::GetAllTasks(CTasksTypedPtrArray& oTasksTypedPtrArray) con
 
 bool CTasksAppService::AddTask(TASKS& oReccord) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		return false;
 	}
 
@@ -53,14 +47,11 @@ bool CTasksAppService::AddTask(TASKS& oReccord) const
 
 bool CTasksAppService::UpdateTask(TASKS& oRecord) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		return false;
 	}
 
@@ -77,14 +68,11 @@ bool CTasksAppService::UpdateTask(TASKS& oRecord) const
 
 bool CTasksAppService::DeleteTask(const long lID) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
-
 		return false;
 	}
 

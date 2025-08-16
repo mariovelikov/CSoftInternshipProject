@@ -43,27 +43,36 @@ bool CUsersAppService::AddUser(USERS& oRecUser) const
 		return false;
 	}
 
+	if (FAILED(pSession->StartTransaction()))
+	{
+		return false;
+	}
+
 	CUsersTable oUsersTable(pSession);
 	if (!oUsersTable.Insert(oRecUser))
 	{
+		pSession->Abort();
 		pSession->Close();
 		return false;
 	}
 
+	pSession->Commit();
 	pSession->Close();
 	return true;
 }
 
 bool CUsersAppService::UpdateUser(USERS& oRecUser) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
+		return false;
+	}
 
+	if (FAILED(pSession->StartTransaction()))
+	{
 		return false;
 	}
 
@@ -71,24 +80,28 @@ bool CUsersAppService::UpdateUser(USERS& oRecUser) const
 
 	if (!oUsersTable.UpdateWhereID(oRecUser.lId, oRecUser))
 	{
+		pSession->Abort();
 		pSession->Close();
 		return false;
 	}
 
+	pSession->Commit();
 	pSession->Close();
 	return true;
 }
 
 bool CUsersAppService::DeleteUser(const long lID) const
 {
-	CDataSourceConnection& oDataSourceConnection = CDataSourceConnection::GetInstance();
-	CDataSource oDataSource = oDataSourceConnection.GetDataSource();
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession* pSession = new CSession();
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
+		return false;
+	}
 
+	if (FAILED(pSession->StartTransaction()))
+	{
 		return false;
 	}
 
@@ -96,10 +109,12 @@ bool CUsersAppService::DeleteUser(const long lID) const
 
 	if (!oUsersTable.DeleteWhereID(lID))
 	{
+		pSession->Abort();
 		pSession->Close();
 		return false;
 	}
 
+	pSession->Commit();
 	pSession->Close();
 	return true;
 }

@@ -14,6 +14,11 @@
 #define ID_PROJECT_DELETE 1003
 #define ID_PROJECT_UPDATE 1004
 
+#define PROJECTS_COLUMN_ID 0
+#define PROJECTS_COLUMN_PROJECT_NAME 1
+#define PROJECTS_COLUMN_DESCRIPTION 2
+#define PROJECTS_COLUMN_PROJECT_MANAGER 3
+
 IMPLEMENT_DYNCREATE(CProjectsView, CListView)
 
 BEGIN_MESSAGE_MAP(CProjectsView, CListView)
@@ -52,6 +57,7 @@ BOOL CProjectsView::PreCreateWindow(CREATESTRUCT& cs)
 
 //Methods
 //----------------
+
 void CProjectsView::OnInitialUpdate()
 {
 	CListView::OnInitialUpdate();
@@ -61,10 +67,10 @@ void CProjectsView::OnInitialUpdate()
 	CListCtrl& oListCtrl = GetListCtrl();
 	oListCtrl.ModifyStyle(0, LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS);
 	oListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-	oListCtrl.InsertColumn(0, _T("ID"), LVCFMT_LEFT, 50);
-	oListCtrl.InsertColumn(1, _T("Project Name"), LVCFMT_LEFT, 150);
-	oListCtrl.InsertColumn(2, _T("Description"), LVCFMT_LEFT, 200);
-	oListCtrl.InsertColumn(3, _T("Project Manager"), LVCFMT_LEFT, 200);
+	oListCtrl.InsertColumn(PROJECTS_COLUMN_ID, _T("ID"), LVCFMT_LEFT, 50);
+	oListCtrl.InsertColumn(PROJECTS_COLUMN_PROJECT_NAME, _T("Project Name"), LVCFMT_LEFT, 150);
+	oListCtrl.InsertColumn(PROJECTS_COLUMN_DESCRIPTION, _T("Description"), LVCFMT_LEFT, 200);
+	oListCtrl.InsertColumn(PROJECTS_COLUMN_PROJECT_MANAGER, _T("Project Manager"), LVCFMT_LEFT, 200);
 
 	// Load initial data
 	CProjectsViewItemTypedPtrArray& oProjectsArray = GetDocument()->GetAllProjects();
@@ -93,9 +99,9 @@ void CProjectsView::InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nIt
 		nItemIndex = oListCtrl.InsertItem(nItemIndex, strId);
 	}
 
-	oListCtrl.SetItemText(nItemIndex, 1, pProject->recProject.szName);
-	oListCtrl.SetItemText(nItemIndex, 2, pProject->recProject.szDescription);
-	oListCtrl.SetItemText(nItemIndex, 3, pProject->szProjectManagerName);
+	oListCtrl.SetItemText(nItemIndex, PROJECTS_COLUMN_PROJECT_NAME, pProject->recProject.szName);
+	oListCtrl.SetItemText(nItemIndex, PROJECTS_COLUMN_DESCRIPTION, pProject->recProject.szDescription);
+	oListCtrl.SetItemText(nItemIndex, PROJECTS_COLUMN_PROJECT_MANAGER, pProject->szProjectManagerName);
 	oListCtrl.SetItemData(nItemIndex, (DWORD_PTR)pProject);
 };
 
