@@ -11,7 +11,7 @@ public:
 
 	/// <summary> Add user to the database and hash the password in function before insert</summary>
 	bool AddUser(USERS& oRecUser);
-	bool UpdateUser(USERS& oRecUser) const;
+	bool UpdateUser(USERS& oRecUser);
 	bool DeleteUser(const long lID) const;
 
 private:

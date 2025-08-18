@@ -5,6 +5,7 @@
 #include "afxdialogex.h"
 #include "CUsersDialog.h"
 #include "Resource.h"
+#include "Structures.h"
 
 #define NAME_LENGTH 64
 #define EMAIL_LENGTH 128
@@ -40,6 +41,10 @@ BOOL CUsersDialog::OnInitDialog()
 
 	if (m_eCurrentAction == ViewDetails) {
 		SetReadOnlyControls();
+		GetDlgItem(EDB_PASSWORD)->ShowWindow(FALSE);
+		GetDlgItem(EDB_PASSWORD_REPEAT)->ShowWindow(FALSE);
+		GetDlgItem(IDC_STATIC_PASSWORD_REPEAT)->ShowWindow(FALSE);
+		GetDlgItem(IDC_STATIC_PASSWORD)->ShowWindow(FALSE);
 	}
 
 	GetDlgItem(EDB_NAME)->SetFocus();
@@ -59,11 +64,13 @@ void CUsersDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, EDB_EMAIL, m_strEmail);
 	DDX_Text(pDX, EDB_JOBS_TITLE, m_strJobsTitle);
 	DDX_Text(pDX, EDB_PASSWORD, m_strPassword);
-	DDX_Text(pDX, EBD_PASSWORD_REPEAT, m_strPasswordRepeat);
+	DDX_Text(pDX, EDB_PASSWORD_REPEAT, m_strPasswordRepeat);
 
 	DDV_MaxChars(pDX, m_strName, NAME_LENGTH);
 	DDV_MaxChars(pDX, m_strEmail, EMAIL_LENGTH);
 	DDV_MaxChars(pDX, m_strJobsTitle, JOBS_TITLE_LENGTH);
+	DDV_MaxChars(pDX, m_strPassword, PASSWORD_LENGTH);
+	DDV_MaxChars(pDX, m_strPasswordRepeat, PASSWORD_LENGTH);
 }
 
 void CUsersDialog::OnBnClicked() {
@@ -80,6 +87,8 @@ void CUsersDialog::OnBnClicked() {
 	default:
 		break;
 	}
+
+	CDialogEx::OnOK();
 }
 
 void CUsersDialog::AddUser()
@@ -144,7 +153,7 @@ bool CUsersDialog::ValidateInput()
 	}
 
 	// Password
-	if (m_eCurrentAction == ViewAdd || m_eCurrentAction == ViewUpdate)
+	if (m_eCurrentAction == ViewAdd || (m_eCurrentAction == ViewUpdate && !m_strPassword.IsEmpty()))
 	{
 		if (m_strPassword.IsEmpty() || m_strPassword.GetLength() > sizeof(m_oUser.szPassword) / sizeof(TCHAR) - 1)
 		{

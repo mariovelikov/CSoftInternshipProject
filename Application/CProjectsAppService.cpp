@@ -168,7 +168,6 @@ bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const //
 
 	HRESULT hResult = pSession->Open(oDataSource);
 	if (FAILED(hResult)) {
-		//PrintError(hResult, _T("Open session failed"));
 		pSession->Close();
 		return false;
 	}

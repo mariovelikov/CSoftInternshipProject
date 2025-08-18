@@ -55,7 +55,7 @@ bool CUsersAppService::AddUser(USERS& oRecUser)
 	return true;
 }
 
-bool CUsersAppService::UpdateUser(USERS& oRecUser) const
+bool CUsersAppService::UpdateUser(USERS& oRecUser)
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
 	CSession oSession;
@@ -63,6 +63,23 @@ bool CUsersAppService::UpdateUser(USERS& oRecUser) const
 	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
 		return false;
+	}
+
+	// If password is provided, hash it before updating
+	if (_tcslen(oRecUser.szPassword) > 0) {
+		CString strHashedPass = HashSHA256(oRecUser.szPassword);
+		_tcscpy_s(oRecUser.szPassword, sizeof(oRecUser.szPassword) / sizeof(TCHAR), strHashedPass);
+	}
+	else
+	{
+		CUsersTable oUsersTable(&oSession);
+		USERS oExistingUser;
+		if (oUsersTable.SelectWhereID(oRecUser.lId, oExistingUser))
+		{
+			oSession.Close();
+			return false;
+		};
+		_tcscpy_s(oRecUser.szPassword, _countof(oRecUser.szPassword), oExistingUser.szPassword);
 	}
 
 	if (FAILED(oSession.StartTransaction()))

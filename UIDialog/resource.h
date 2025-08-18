@@ -31,7 +31,9 @@
 #define EDB_PASSWORD                    1027
 #define IDC_EDIT2                       1028
 #define IDC_EDB_PASSWORD                1028
-#define EBD_PASSWORD_REPEAT             1028
+#define EDB_PASSWORD_REPEAT             1028
+#define IDC_STATIC_PASSWORD             1039
+#define IDC_STATIC_PASSWORD_REPEAT      1040
 
 // Next default values for new objects
 // 
@@ -39,7 +41,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        1010
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           1000
 #endif
 #endif
