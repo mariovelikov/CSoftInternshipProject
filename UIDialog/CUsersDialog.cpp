@@ -58,6 +58,8 @@ void CUsersDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, EDB_NAME, m_strName);
 	DDX_Text(pDX, EDB_EMAIL, m_strEmail);
 	DDX_Text(pDX, EDB_JOBS_TITLE, m_strJobsTitle);
+	DDX_Text(pDX, EDB_PASSWORD, m_strPassword);
+	DDX_Text(pDX, EBD_PASSWORD_REPEAT, m_strPasswordRepeat);
 
 	DDV_MaxChars(pDX, m_strName, NAME_LENGTH);
 	DDV_MaxChars(pDX, m_strEmail, EMAIL_LENGTH);
@@ -141,6 +143,27 @@ bool CUsersDialog::ValidateInput()
 		bValidate = false;
 	}
 
+	// Password
+	if (m_eCurrentAction == ViewAdd || m_eCurrentAction == ViewUpdate)
+	{
+		if (m_strPassword.IsEmpty() || m_strPassword.GetLength() > sizeof(m_oUser.szPassword) / sizeof(TCHAR) - 1)
+		{
+			if (m_strPassword.IsEmpty())
+			{
+				strInputErrors.Append(_T("Password box is empty !\n"));
+			}
+			else {
+				strInputErrors.AppendFormat(_T("Password length is bigger than %d !\n"), sizeof(m_oUser.szPassword) / sizeof(TCHAR) - 1);
+			}
+			bValidate = false;
+		}
+		if (m_strPasswordRepeat != m_strPassword)
+		{
+			strInputErrors.Append(_T("Passwords do not match !\n"));
+			bValidate = false;
+		}
+	}
+
 	if (!strInputErrors.IsEmpty())
 	{
 		AfxMessageBox(strInputErrors);
@@ -170,4 +193,5 @@ void CUsersDialog::SetValuesToMemberUser()
 	wcsncpy_s(m_oUser.szName, m_strName, sizeof(m_oUser.szName) / sizeof(TCHAR) - 1);
 	wcsncpy_s(m_oUser.szEmail, m_strEmail, sizeof(m_oUser.szEmail) / sizeof(TCHAR) - 1);
 	wcsncpy_s(m_oUser.szJobTitle, m_strJobsTitle, sizeof(m_oUser.szJobTitle) / sizeof(TCHAR) - 1);
+	wcsncpy_s(m_oUser.szPassword, m_strPassword, sizeof(m_oUser.szJobTitle) / sizeof(TCHAR) - 1);
 }

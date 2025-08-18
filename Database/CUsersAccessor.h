@@ -15,6 +15,7 @@
 #define USERS_COLUMN_ENTRY_NAME 3
 #define USERS_COLUMN_ENTRY_EMAIL 4
 #define USERS_COLUMN_ENTRY_JOB_TITLE 5
+#define USERS_COLUMN_ENTRY_PASSWORD 6
 
 /// <summary> Accessor class for Users</summary>
 template<>
@@ -30,6 +31,7 @@ protected:
 			COLUMN_ENTRY(USERS_COLUMN_ENTRY_NAME, m_rec.szName)
 			COLUMN_ENTRY(USERS_COLUMN_ENTRY_EMAIL, m_rec.szEmail)
 			COLUMN_ENTRY(USERS_COLUMN_ENTRY_JOB_TITLE, m_rec.szJobTitle)
+			COLUMN_ENTRY(USERS_COLUMN_ENTRY_PASSWORD, m_rec.szPassword)
 		END_ACCESSOR()
 	END_ACCESSOR_MAP()
 

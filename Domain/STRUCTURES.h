@@ -5,7 +5,7 @@
 #define NAME_LENGTH 64
 #define EMAIL_LENGTH 128
 #define JOBS_TITLE_LENGTH 128
-#define PASSWORD_LENGTH 64
+#define PASSWORD_LENGTH 128
 
 enum SprxTasksState
 {

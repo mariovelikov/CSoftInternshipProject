@@ -8,14 +8,16 @@ class ApplicationDLL_EXP CUsersAppService
 {
 public:
 	bool GetAllUsers(CUsersMap& oUsersMap) const;
-	bool AddUser(USERS& oRecUser) const;
+
+	/// <summary> Add user to the database and hash the password in function before insert</summary>
+	bool AddUser(USERS& oRecUser);
 	bool UpdateUser(USERS& oRecUser) const;
 	bool DeleteUser(const long lID) const;
 
 private:
 	/// <summary>Create hash of CString </summary>
 	/// <param name="input"></param>
-	/// <returns></returns>
+	/// <returns>Hashed string</returns>
 	CString HashSHA256(const CString& input);
 
 public:

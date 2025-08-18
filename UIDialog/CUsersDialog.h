@@ -34,6 +34,8 @@ private:
 	CString m_strName;
 	CString m_strEmail;
 	CString m_strJobsTitle;
+	CString m_strPassword;
+	CString m_strPasswordRepeat;
 	ViewActions m_eCurrentAction = ViewAdd;
 
 private:
