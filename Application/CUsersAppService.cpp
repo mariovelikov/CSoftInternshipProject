@@ -5,20 +5,11 @@
 
 bool CUsersAppService::GetAllUsers(CUsersMap& oUsersMap) const
 {
-	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
-
-	HRESULT hResult = pSession->Open(oDataSource);
-	if (FAILED(hResult)) {
-		return false;
-	}
-
-	CUsersTable	oUsersTable(pSession);
+	CUsersTable	oUsersTable;
 
 	CUsersTypedPtrArray oUserTypedPtrArray;
 	if (!oUsersTable.SelectAll(oUserTypedPtrArray))
 	{
-		pSession->Close();
 		return false;
 	}
 
@@ -29,92 +20,124 @@ bool CUsersAppService::GetAllUsers(CUsersMap& oUsersMap) const
 		oUsersMap.SetAt(pUser->lId, pUser);
 	}
 
-	pSession->Close();
 	return true;
 }	
 
 bool CUsersAppService::AddUser(USERS& oRecUser) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession oSession;
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
 		return false;
 	}
 
-	if (FAILED(pSession->StartTransaction()))
+	if (FAILED(oSession.StartTransaction()))
 	{
 		return false;
 	}
 
-	CUsersTable oUsersTable(pSession);
+	CUsersTable oUsersTable(&oSession);
 	if (!oUsersTable.Insert(oRecUser))
 	{
-		pSession->Abort();
-		pSession->Close();
+		oSession.Abort();
+		oSession.Close();
 		return false;
 	}
 
-	pSession->Commit();
-	pSession->Close();
+	oSession.Commit();
+	oSession.Close();
 	return true;
 }
 
 bool CUsersAppService::UpdateUser(USERS& oRecUser) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession oSession;
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
 		return false;
 	}
 
-	if (FAILED(pSession->StartTransaction()))
+	if (FAILED(oSession.StartTransaction()))
 	{
 		return false;
 	}
 
-	CUsersTable oUsersTable(pSession);
+	CUsersTable oUsersTable(&oSession);
 
 	if (!oUsersTable.UpdateWhereID(oRecUser.lId, oRecUser))
 	{
-		pSession->Abort();
-		pSession->Close();
+		oSession.Abort();
+		oSession.Close();
 		return false;
 	}
 
-	pSession->Commit();
-	pSession->Close();
+	oSession.Commit();
+	oSession.Close();
 	return true;
 }
 
 bool CUsersAppService::DeleteUser(const long lID) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession oSession;
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
 		return false;
 	}
 
-	if (FAILED(pSession->StartTransaction()))
+	if (FAILED(oSession.StartTransaction()))
 	{
 		return false;
 	}
 
-	CUsersTable oUsersTable(pSession);
+	CUsersTable oUsersTable(&oSession);
 
 	if (!oUsersTable.DeleteWhereID(lID))
 	{
-		pSession->Abort();
-		pSession->Close();
+		oSession.Abort();
+		oSession.Close();
 		return false;
 	}
 
-	pSession->Commit();
-	pSession->Close();
+	oSession.Commit();
+	oSession.Close();
 	return true;
+}
+
+
+bool CUsersAppService::ClientAuthentication(const CString& strEmail, const CString& strPassword)
+{
+	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
+	CSession oSession;
+	if (FAILED(oSession.Open(oDataSource)))
+	{
+		return false;
+	}
+
+	CUsersTable oUsersTable(&oSession);
+	USERS recUser;
+	if (!oUsersTable.LoadRecordByColumnValue(recUser, _T("EMAIL"), (LPCTSTR)strEmail))
+	{
+		return false;
+	}
+
+
+	if (recUser.lId != _ttoi(strPassword))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+CString CUsersAppService::HashSHA256(const CString& input)
+{
+
+	CString hashedValue = input; 
+	return hashedValue;
 }

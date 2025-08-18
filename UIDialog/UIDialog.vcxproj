@@ -199,6 +199,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CLoginDialog.cpp" />
     <ClCompile Include="CProjectsDialog.cpp" />
     <ClCompile Include="CTasksDialog.cpp" />
     <ClCompile Include="dllmain.cpp">
@@ -229,6 +230,7 @@
     <None Include="UIDialog.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CLoginDialog.h" />
     <ClInclude Include="CProjectsDialog.h" />
     <ClInclude Include="CTasksDialog.h" />
     <ClInclude Include="framework.h" />

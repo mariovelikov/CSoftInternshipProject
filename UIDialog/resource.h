@@ -13,6 +13,7 @@
 #define STT_EMAIL                       1005
 #define STT_JOBS_TITLE                  1006
 #define IDD_EDB_TASKS_DIALOG            1006
+#define IDD_EDB_LOGIN_DIALOG            1008
 #define IDC_EDB_PROJECTS_NAME           1012
 #define IDC_EDB_PROJECTS_DESCRIPTION    1013
 #define IDC_LSC_TASKS                   1015
@@ -25,14 +26,19 @@
 #define IDC_EDB_TASKS_EFFORT            1023
 #define IDC_STT_TOTAL_EFFORT_TITLE      1025
 #define IDC_CMB_TOTAL_EFFORT            1026
+#define IDC_EDIT1                       1027
+#define IDC_EDB_NAME                    1027
+#define IDC_EDB_EMAIL                   1027
+#define IDC_EDIT2                       1028
+#define IDC_EDB_PASSWORD                1028
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        1008
+#define _APS_NEXT_RESOURCE_VALUE        1010
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           1000
 #endif
 #endif

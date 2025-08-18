@@ -205,7 +205,13 @@ bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const //
 	}
 
 	// Update tasks 
+	short sProjecState = SprxFinished;
 	for (int i = 0; i < oRecord.oTasksTypedPtrArray.GetCount(); i++) {
+		if (oRecord.oTasksTypedPtrArray.GetAt(i)->sState == SprxActive || oRecord.oTasksTypedPtrArray.GetAt(i)->sState == SprxInProgress)
+		{
+			sProjecState = SprxActive;
+		}
+
 		if (!oTasksTable.UpdateWhereID(oRecord.oTasksTypedPtrArray.GetAt(i)->lId, *oRecord.oTasksTypedPtrArray[i]))
 		{
 			pSession->Abort();
@@ -217,6 +223,7 @@ bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const //
 	CProjectsTable oProjetsTable(pSession);
 	
 	//Update project
+	oRecord.recProject.sState = sProjecState;
 	if (!oProjetsTable.UpdateWhereID(oRecord.recProject.lId, oRecord.recProject))
 	{
 		pSession->Abort();

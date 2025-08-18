@@ -5,6 +5,7 @@
 #define NAME_LENGTH 64
 #define EMAIL_LENGTH 128
 #define JOBS_TITLE_LENGTH 128
+#define PASSWORD_LENGTH 64
 
 enum SprxTasksState
 {
@@ -36,6 +37,9 @@ struct USERS
 
 	/// <summary> Job title of User </summary>
 	TCHAR szJobTitle[JOBS_TITLE_LENGTH];
+
+	/// <summary> Password of user HASH </summary>
+	TCHAR szPassword[PASSWORD_LENGTH];
 
 	/// <summary> Constructor </summary>
 	USERS()

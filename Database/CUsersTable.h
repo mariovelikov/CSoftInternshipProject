@@ -4,5 +4,6 @@
 class CUsersTable : public CGenericTable<USERS>
 {
 public:
-	CUsersTable(CSession* oSession) : CGenericTable<USERS>(_T("USERS"), oSession) {};
+	CUsersTable(CSession* oSession = nullptr) 
+		: CGenericTable<USERS>(_T("USERS"), oSession) {};
 };

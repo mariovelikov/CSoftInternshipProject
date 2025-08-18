@@ -14,14 +14,35 @@ template <typename T>
 class CGenericTable
 {
 public:
-	CGenericTable(CString strTableName, CSession* oSession = nullptr) : m_strTableName(strTableName), m_oSession(*oSession){};
+	CGenericTable(CString strTableName, CSession* pSession = nullptr) 
+		: m_strTableName(strTableName), m_pSession(pSession)
+	{
+		if (m_pSession == nullptr)
+		{
+			m_pSession = new CSession();
+			m_bInnerSession = true;
+
+			m_pSession->Open(CDataSourceConnection::GetInstance().GetDataSource());
+		}
+	};
+
+	~CGenericTable()
+	{
+		if (m_bInnerSession == true)
+		{
+			m_pSession->Close();
+			delete m_pSession;
+			m_pSession = nullptr;
+		}
+	};
+
 	bool SelectAll(CStructTypedPtrArray<T>& oRecordsArray)
 	{
 		// Create SQL query to select all users
 		CString strQuery;
 		strQuery.Format(_T("SELECT * FROM %s WITH(NOLOCK)"), m_strTableName);
 
-		HRESULT hResult = m_oCommand.Open(m_oSession, strQuery);
+		HRESULT hResult = m_oCommand.Open(*m_pSession, strQuery);
 
 		if (FAILED(hResult))
 		{
@@ -52,7 +73,7 @@ public:
 		// Construct the query
 		CString strQuery;
 		strQuery.Format(_T("SELECT * FROM %s WITH(NOLOCK) WHERE ID = %ld"), m_strTableName,  lID);
-		HRESULT hResult = m_oCommand.Open(m_oSession, strQuery);
+		HRESULT hResult = m_oCommand.Open(*m_pSession, strQuery);
 
 		if (FAILED(hResult))
 		{
@@ -79,7 +100,7 @@ public:
 
 		CDBPropSet oUpdateDBPropSet = GetDBPropSet();
 
-		HRESULT hResult = m_oCommand.Open(m_oSession, strQuery, &oUpdateDBPropSet);
+		HRESULT hResult = m_oCommand.Open(*m_pSession, strQuery, &oUpdateDBPropSet);
 		if (FAILED(hResult)) {
 			PrintError(hResult, _T("Open command failed"));
 			m_oCommand.Close();
@@ -125,7 +146,7 @@ public:
 		CString strQuery;
 		strQuery.Format(_T("SELECT * FROM %s WHERE 1 <> 1"), m_strTableName);
 
-		HRESULT hResult = m_oCommand.Open(m_oSession, strQuery, &oInsertDBPropSet);
+		HRESULT hResult = m_oCommand.Open(*m_pSession, strQuery, &oInsertDBPropSet);
 		if (FAILED(hResult))
 		{
 			_com_error err(hResult);
@@ -167,7 +188,7 @@ public:
 
 		CDBPropSet oDeleteDBPropSet = GetDBPropSet();
 
-		HRESULT hResult = m_oCommand.Open(m_oSession, strQuery, &oDeleteDBPropSet);
+		HRESULT hResult = m_oCommand.Open(*m_pSession, strQuery, &oDeleteDBPropSet);
 		if (FAILED(hResult)) {
 			PrintError(hResult, _T("Transaction failed"));
 			m_oCommand.Close();
@@ -195,6 +216,30 @@ public:
 		return true;
 	};
 
+	bool LoadRecordByColumnValue(T& oRecord, LPCTSTR lpszColumnName, LPCTSTR lpszColumnValue)
+	{
+		// Construct the query
+		CString strQuery;
+		strQuery.Format(_T("SELECT * FROM %s WITH(NOLOCK) WHERE %s = '%s'"), GetTableName(), lpszColumnName, lpszColumnValue);
+		HRESULT hResult = m_oCommand.Open(*m_pSession, strQuery);
+
+		if (FAILED(hResult))
+		{
+			PrintError(hResult, _T("SQL Query failed"));
+
+			return false;
+		}
+
+		if (m_oCommand.MoveNext() == S_OK)
+		{
+			oRecord = m_oCommand.GetRec();
+			m_oCommand.Close();
+			return true;
+		}
+
+		m_oCommand.Close();
+		return false;
+	}
 
 private:
 	void PrintError(HRESULT hResult, LPCTSTR lpszMessage)
@@ -214,9 +259,16 @@ private:
 		return oPropSet;
 	}
 
+protected:
+	CString GetTableName() const
+	{
+		return m_strTableName;
+	}
+
 private:
 	CString m_strTableName;
-	CSession& m_oSession;
+	CSession* m_pSession;
+	bool m_bInnerSession = false;
 	/// <summary> Execute SQL and Hadle results</summary>
 	CCommand<CAccessor<CGenericAccessor<T>>> m_oCommand;
 };

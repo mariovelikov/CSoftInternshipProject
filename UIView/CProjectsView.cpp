@@ -80,6 +80,8 @@ void CProjectsView::OnInitialUpdate()
 
 		InsertDataInCtrl(pProjectItem, i, ViewAdd);
 	}
+
+	GetDocument()->SetTitle(_T("Projects"));
 }
 
 CProjectsDocument* CProjectsView::GetDocument() const

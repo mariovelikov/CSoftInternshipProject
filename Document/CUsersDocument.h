@@ -25,6 +25,9 @@ public:
 	bool UpdateUser(USERS& oRecUser);
 	bool DeleteUser(const long lId);
 
+public:
+	static bool ClientAuthentication(const CString& strEmail, const CString& strPassword);
+	
 	// Overrides
 	// ----------------
 	BOOL OnNewDocument() override;

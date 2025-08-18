@@ -90,6 +90,7 @@ BOOL CProjectsDialog::OnInitDialog()
 	}
 
 	GetDlgItem(IDC_EDB_PROJECTS_NAME)->SetFocus();
+	GetDlgItem(IDC_CMB_TOTAL_EFFORT)->EnableWindow(FALSE);
 	return FALSE;
 }
 
@@ -140,17 +141,6 @@ void CProjectsDialog::ViewProjectDetails()
 {
 	FillTasksInTable();
 
-	// Set the correct selection based on m_oProjectDetails.recProject.sState
-	for (int i = 0; i < m_oStateComboBox.GetCount(); ++i)
-	{
-		DWORD_PTR data = m_oStateComboBox.GetItemData(i);
-		if ((SprxProjectsState)data == m_oProjectDetails.recProject.sState)
-		{
-			m_oStateComboBox.SetCurSel(i);
-			break;
-		}
-	}
-
 	// Disable controls if viewing details
 	m_oStateComboBox.EnableWindow(FALSE);
 	GetDlgItem(IDC_CMB_USERS)->EnableWindow(FALSE);
@@ -158,8 +148,6 @@ void CProjectsDialog::ViewProjectDetails()
 	GetDlgItem(IDC_EDB_PROJECTS_DESCRIPTION)->EnableWindow(FALSE);
 	GetDlgItem(IDC_CMB_STATE)->EnableWindow(FALSE);
 	GetDlgItem(IDC_STT_TOTAL_EFFORT_TITLE)->ShowWindow(TRUE);
-	GetDlgItem(IDC_CMB_TOTAL_EFFORT)->ShowWindow(TRUE);
-	GetDlgItem(IDC_CMB_TOTAL_EFFORT)->EnableWindow(FALSE);
 }
 
 void CProjectsDialog::FillComboBoxes()
@@ -188,8 +176,16 @@ void CProjectsDialog::FillComboBoxes()
 	nIndex = m_oStateComboBox.AddString(_T("Finished"));
 	m_oStateComboBox.SetItemData(nIndex, SprxFinished);
 
-	if (m_oStateComboBox.GetCount() > 0)
-		m_oStateComboBox.SetCurSel(0);
+	// Set correct state in combo box
+	for (int i = 0; i < m_oStateComboBox.GetCount(); ++i)
+	{
+		DWORD_PTR sState = m_oStateComboBox.GetItemData(i);
+		if ((SprxProjectsState)sState == m_oProjectDetails.recProject.sState)
+		{
+			m_oStateComboBox.SetCurSel(i);
+			break;
+		}
+	}
 }
 
 void CProjectsDialog::OnAddTask()

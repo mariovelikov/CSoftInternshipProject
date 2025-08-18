@@ -13,6 +13,7 @@
 #include "CUsersView.h"
 #include "CProjectsDocument.h"
 #include "CProjectsView.h"
+#include "CLoginDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -45,6 +46,33 @@ BOOL ClientApp::InitInstance()
 	if (hResult != S_OK)
 		return FALSE;
 	
+	CString strEmail, strPassword;
+	CLoginDialog oLoginDialog(strEmail, strPassword);
+	INT_PTR nBtnClick = oLoginDialog.DoModal();
+	if (nBtnClick != IDOK)
+	{
+		return FALSE;
+	};
+	
+	if (!CUsersDocument::ClientAuthentication(strEmail, strPassword))
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			AfxMessageBox(_T("Authentication failed. Please try again."));
+			if (i == 2)
+				return FALSE;
+			
+			nBtnClick = oLoginDialog.DoModal();
+			if (nBtnClick != IDOK)
+			{
+				return FALSE;
+			};
+
+			if (CUsersDocument::ClientAuthentication(strEmail, strPassword))
+				break;
+		}
+	}
+
 	CMultiDocTemplate* pDocTemplate = nullptr;
 	pDocTemplate = new CMultiDocTemplate(IDR_CSoftInternshipProjectTYPE,
 		RUNTIME_CLASS(CUsersDocument),
@@ -80,9 +108,11 @@ BOOL ClientApp::InitInstance()
 	if (!ProcessShellCommand(cmdInfo))
 		return FALSE;
 
+
+
 	pMainFrame->ShowWindow(m_nCmdShow);
 	pMainFrame->UpdateWindow();
-
+	
 	return TRUE;
 }
 

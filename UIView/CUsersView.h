@@ -32,6 +32,7 @@ public:
 	void CUsersView::OnUserDetails();
 
 	void InsertDataInCtrl(const USERS* pUser, int nItemIndex, ViewActions eAction = ViewUpdate);
+
 public:
 	CUsersDocument* GetDocument() const;
 

@@ -63,15 +63,8 @@ bool CUsersDocument::UpdateUser(USERS& oRecUser)
 		return false;
 	}
 
-	//for (int i = 0; i < m_oUsersArray.GetSize(); ++i) 
-	//{
-	//	if (m_oUsersArray[i]->lId == oRecUser.lId) 
-	//	{
-	//		*m_oUsersArray[i] = oRecUser;
 	UpdateAllViews(nullptr, (LPARAM)ViewUpdate, (CObject*)m_oUsersMap[oRecUser.lId]);
 	return true;
-		/*}
-	}*/
 
 	return false;
 }
@@ -85,17 +78,11 @@ bool CUsersDocument::DeleteUser(const long lId)
 		return false;
 	}
 
-	//for (int i = 0; i < m_oUsersArray.GetSize(); ++i) 
-	//{
-	//	if (m_oUsersArray[i]->lId == lId) 
-	//	{
-			delete m_oUsersMap[lId];
-			m_oUsersMap.RemoveKey(lId);
+	delete m_oUsersMap[lId];
+	m_oUsersMap.RemoveKey(lId);
 
-			UpdateAllViews(nullptr, (LPARAM)ViewDelete, nullptr);
-			return true;
-		/*}
-	}*/
+	UpdateAllViews(nullptr, (LPARAM)ViewDelete, nullptr);
+	return true;
 	return false;
 }
 
@@ -109,4 +96,9 @@ BOOL CUsersDocument::OnNewDocument()
 		return FALSE;
 
 	return TRUE;
+}
+
+bool CUsersDocument::ClientAuthentication(const CString& strEmail, const CString& strPassword)
+{
+	return CUsersAppService().ClientAuthentication( strEmail, strPassword);
 }

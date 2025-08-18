@@ -306,5 +306,6 @@ void CUsersView::OnInitialUpdate()
 		++i;
 	}
 
+	GetDocument()->SetTitle(_T("Users"));
 }
 
