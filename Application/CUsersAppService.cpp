@@ -147,12 +147,12 @@ bool CUsersAppService::ClientAuthentication(const CString& strEmail, const CStri
 		return false;
 	}
 
-
-	if (recUser.lId != _ttoi(strPassword))
+	CString strHashedPass = HashSHA256(strPassword);
+	
+	if (_tcsicmp(recUser.szPassword, strHashedPass) != 0)
 	{
 		return false;
 	}
-
 	return true;
 }
 

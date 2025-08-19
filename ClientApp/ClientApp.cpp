@@ -46,7 +46,7 @@ BOOL ClientApp::InitInstance()
 	if (hResult != S_OK)
 		return FALSE;
 	
-	/*CString strEmail, strPassword;
+	CString strEmail, strPassword;
 	CLoginDialog oLoginDialog(strEmail, strPassword);
 	INT_PTR nBtnClick = oLoginDialog.DoModal();
 	if (nBtnClick != IDOK)
@@ -71,7 +71,7 @@ BOOL ClientApp::InitInstance()
 			if (CUsersDocument::ClientAuthentication(strEmail, strPassword))
 				break;
 		}
-	}*/
+	}
 
 	CMultiDocTemplate* pDocTemplate = nullptr;
 	pDocTemplate = new CMultiDocTemplate(IDR_CSoftInternshipProjectTYPE,
