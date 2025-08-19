@@ -32,6 +32,13 @@ public:
 	void CProjectsView::OnProjectDelete();
 	void CProjectsView::OnProjectUpdate();
 
+private:
+	/// <summary>
+	/// Sort the list control by the specified column index.
+	/// </summary>
+	/// <param name="nColumnIndex"></param>
+	/// <param name="bAscending"></param>
+	void SortListCtrl(int nColumnIndex, bool bAscending = true);
 	void InsertDataInCtrl(const PROJECTS_VIEW_ITEM* pProject, int nItemIndex, ViewActions eAction = ViewUpdate);
 public:
 	CProjectsDocument* GetDocument() const;
@@ -51,7 +58,10 @@ protected:
 public:
 	afx_msg void OnNMRClick(NMHDR* pNMHDR, LRESULT* pResult);
 
-private:
 	// Members
 	// ----------------
+public:
+	static bool bAscending;
+public:
+	afx_msg void OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult);
 };

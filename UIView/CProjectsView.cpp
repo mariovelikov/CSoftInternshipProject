@@ -27,6 +27,7 @@ BEGIN_MESSAGE_MAP(CProjectsView, CListView)
 	ON_COMMAND(ID_PROJECT_UPDATE, &CProjectsView::OnProjectUpdate)
 	ON_COMMAND(ID_PROJECT_DETAILS, &CProjectsView::OnProjectDetails)
 	ON_COMMAND(ID_PROJECT_DELETE, &CProjectsView::OnProjectDelete)
+	ON_NOTIFY_REFLECT(LVN_COLUMNCLICK, &CProjectsView::OnLvnColumnclick)
 END_MESSAGE_MAP()
 
 //Constructor / Destructor
@@ -62,6 +63,7 @@ void CProjectsView::OnInitialUpdate()
 {
 	CListView::OnInitialUpdate();
 	GetParentFrame()->SetWindowText(_T("Projects View"));
+	
 	
 	// Set the column headers
 	CListCtrl& oListCtrl = GetListCtrl();
@@ -290,3 +292,60 @@ void CProjectsView::OnUpdate(CView* /*pSender*/, LPARAM lHint, CObject* pHint)
 	}
 }
 
+bool CProjectsView::bAscending = true;
+void CProjectsView::OnLvnColumnclick(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	int nColumn = pNMLV->iSubItem;
+
+	SortListCtrl(nColumn, bAscending);
+	bAscending = !bAscending;
+
+	*pResult = 0;
+}
+
+struct SortParams
+{
+	int nColumnIndex;
+	bool bAscending;
+};
+
+static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	PROJECTS_VIEW_ITEM* pItem1 = (PROJECTS_VIEW_ITEM*)lParam1;
+	PROJECTS_VIEW_ITEM* pItem2 = (PROJECTS_VIEW_ITEM*)lParam2;
+
+	int nResult = 0;
+	SortParams* pSortParams = (SortParams*)lParamSort;
+
+	switch (pSortParams->nColumnIndex)
+	{
+	case PROJECTS_COLUMN_ID:
+		nResult = pItem1->recProject.lId - pItem2->recProject.lId;
+		break;
+	case PROJECTS_COLUMN_PROJECT_NAME:
+		nResult = _tcscmp(pItem1->recProject.szName, pItem2->recProject.szName);
+		break;
+	case PROJECTS_COLUMN_DESCRIPTION:
+		nResult = _tcscmp(pItem1->recProject.szDescription, pItem2->recProject.szDescription);
+		break;
+	case PROJECTS_COLUMN_PROJECT_MANAGER:
+		nResult = _tcscmp(pItem1->szProjectManagerName, pItem2->szProjectManagerName);
+		break; 
+	default:
+		return 0;
+	}
+	
+	return (nResult) * (pSortParams->bAscending ? 1 : -1);
+};
+
+static SortParams oSortParams;
+
+void CProjectsView::SortListCtrl(int nColumnIndex, bool bAscending)
+{
+		oSortParams.nColumnIndex = nColumnIndex;
+		oSortParams.bAscending = bAscending;
+
+		CListCtrl& oListCtrl = GetListCtrl();
+		oListCtrl.SortItems(CompareFunc, (LPARAM)&oSortParams);
+}	
