@@ -9,33 +9,33 @@
 bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjectsViewItemArray) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession oSession;
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
 		return false;
 	}
 
 	if (FAILED(hResult))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	}
 
-	CProjectsTable oProjetsTable(pSession);
-	CUsersTable oUsersTable(pSession);
+	CProjectsTable oProjetsTable(&oSession);
+	CUsersTable oUsersTable(&oSession);
 
 	CUsersTypedPtrArray oUsersTypedPtrArray;
 	if (!oUsersTable.SelectAll(oUsersTypedPtrArray))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	}
 
 	CProjectsTypedPtrArray oProjectsTypedPtrArray;
 	if (!oProjetsTable.SelectAll(oProjectsTypedPtrArray))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	}
 
@@ -67,29 +67,29 @@ bool CProjectsAppService::GetAllProjects(CProjectsViewItemTypedPtrArray& oProjec
 		oProjectsViewItemArray.Add(pViewItem);
 	}
 
-	pSession->Close();
+	oSession.Close();
 	return true;
 };
 
 bool CProjectsAppService::GetProjectDetails(PROJECT_DETAILS& oProjectDetails) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession* oSession = new CSession();
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession->Open(oDataSource);
 	if (FAILED(hResult)) {
 		CString errorMessage;
 		errorMessage.Format(_T("Open session failed. HRESULT: %d"), hResult);
 		TRACE(errorMessage);
 
-		pSession->Close();
+		oSession->Close();
 		return false;
 	}
 
-	CTasksTable oTasksTable(pSession);
+	CTasksTable oTasksTable(oSession);
 	CTasksTypedPtrArray oTasks; 
 	if (!oTasksTable.SelectAll(oTasks)) {
-		pSession->Close();
+		oSession->Close();
 		return false;
 	}
 
@@ -104,39 +104,39 @@ bool CProjectsAppService::GetProjectDetails(PROJECT_DETAILS& oProjectDetails) co
 		}
 	}
 
-	pSession->Close();
+	oSession->Close();
 	return true;
 }
 
 bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTasksArray) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession oSession;
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
 		CString errorMessage;
 		errorMessage.Format(_T("Open session failed. HRESULT: %d"), hResult);
 		TRACE(errorMessage);
 
-		pSession->Close();
+		oSession.Close();
 		return false;
 	}
 
-	if (FAILED(pSession->StartTransaction()))
+	if (FAILED(oSession.StartTransaction()))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	};
 
-	CProjectsTable oProjetsTable(pSession);
-	CTasksTable oTasksTable(pSession);
+	CProjectsTable oProjetsTable(&oSession);
+	CTasksTable oTasksTable(&oSession);
 
 	// FIRST WE ADD PROJECT
 	if (!oProjetsTable.Insert(oRecord))
 	{
-		pSession->Abort();
-		pSession->Close();
+		oSession.Abort();
+		oSession.Close();
 		return false;
 	}
 
@@ -145,48 +145,48 @@ bool CProjectsAppService::AddProject(PROJECTS& oRecord, CTasksTypedPtrArray& oTa
 		oTasksArray[i]->lProjectId = oRecord.lId;
 		if (!oTasksTable.Insert(*oTasksArray.GetAt(i)))
 		{
-			pSession->Abort();
-			pSession->Close();
+			oSession.Abort();
+			oSession.Close();
 			return false;
 		};
 	}
 
-	if (FAILED(pSession->Commit()))
+	if (FAILED(oSession.Commit()))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	};
 
-	pSession->Close();
+	oSession.Close();
 	return true;
 };
 
 bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const // 
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession oSession;
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
-		pSession->Close();
+		oSession.Close();
 		return false;
 	}
 
-	if (FAILED(pSession->StartTransaction()))
+	if (FAILED(oSession.StartTransaction()))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	};
 
-	CTasksTable oTasksTable(pSession);
+	CTasksTable oTasksTable(&oSession);
 
 	//Delete tasks
 	for (int i = 0; i < oRecord.m_oTaskIdsToDelete.GetCount(); i++)
 	{
 		if (!oTasksTable.DeleteWhereID(oRecord.m_oTaskIdsToDelete.GetAt(i)))
 		{
-			pSession->Abort();
-			pSession->Close();
+			oSession.Abort();
+			oSession.Close();
 			return false;
 		}
 	}
@@ -213,77 +213,77 @@ bool CProjectsAppService::UpdateProject(PROJECT_DETAILS& oRecord) const //
 
 		if (!oTasksTable.UpdateWhereID(oRecord.oTasksTypedPtrArray.GetAt(i)->lId, *oRecord.oTasksTypedPtrArray[i]))
 		{
-			pSession->Abort();
-			pSession->Close();
+			oSession.Abort();
+			oSession.Close();
 			return false;
 		}
 	}
 
-	CProjectsTable oProjetsTable(pSession);
+	CProjectsTable oProjetsTable(&oSession);
 	
 	//Update project
 	oRecord.recProject.sState = sProjecState;
 	if (!oProjetsTable.UpdateWhereID(oRecord.recProject.lId, oRecord.recProject))
 	{
-		pSession->Abort();
-		pSession->Close(); 
+		oSession.Abort();
+		oSession.Close(); 
 		return false;
 	}
 
-	if (FAILED(pSession->Commit()))
+	if (FAILED(oSession.Commit()))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	};
 
-	pSession->Close();
+	oSession.Close();
 	return true;
 };
 
 bool CProjectsAppService::DeleteProject(const PROJECT_DETAILS& oProjectDetails) const
 {
 	CDataSource oDataSource = CDataSourceConnection::GetInstance().GetDataSource();
-	CSession* pSession = new CSession();
+	CSession oSession;
 
-	HRESULT hResult = pSession->Open(oDataSource);
+	HRESULT hResult = oSession.Open(oDataSource);
 	if (FAILED(hResult)) {
-		pSession->Close();
+		oSession.Close();
 		return false;
 	}
 
-	if (FAILED(pSession->StartTransaction()))
+	if (FAILED(oSession.StartTransaction()))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	};
 
-	CTasksTable oTasksTable(pSession);
+	CTasksTable oTasksTable(&oSession);
 	
 	//delete all tasks associated with the project
 	for (int i = 0; i < oProjectDetails.oTasksTypedPtrArray.GetCount(); i++)
 	{
 		if (!oTasksTable.DeleteWhereID(oProjectDetails.oTasksTypedPtrArray.GetAt(i)->lId))
 		{
-			pSession->Abort();
-			pSession->Close();
+			oSession.Abort();
+			oSession.Close();
 			return false;
 		}
 	}
 
-	CProjectsTable oProjetsTable(pSession);
+	CProjectsTable oProjetsTable(&oSession);
 	if (!oProjetsTable.DeleteWhereID(oProjectDetails.recProject.lId))
 	{
-		pSession->Abort();
-		pSession->Close();
+		oSession.Abort();
+		oSession.Close();
 		return false;
 	}
 
-	if (FAILED(pSession->Commit()))
+	if (FAILED(oSession.Commit()))
 	{
-		pSession->Close();
+		oSession.Close();
 		return false;
 	};
 
-	pSession->Close();
+	oSession.Close();
 	return true;
 };

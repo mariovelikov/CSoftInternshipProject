@@ -27,13 +27,13 @@
 #define IDC_STT_TOTAL_EFFORT_TITLE      1025
 #define IDC_CMB_TOTAL_EFFORT            1026
 #define IDC_EDIT1                       1027
-#define IDC_EDB_EMAIL                   1027
-#define EDB_PASSWORD                    1027
-#define IDC_EDIT2                       1028
-#define IDC_EDB_PASSWORD                1028
-#define EDB_PASSWORD_REPEAT             1028
-#define IDC_STATIC_PASSWORD             1039
-#define IDC_STATIC_PASSWORD_REPEAT      1040
+#define IDC_EDB_EMAIL                   1028
+#define EDB_PASSWORD                    1029
+#define IDC_EDIT2                       1040
+#define IDC_EDB_PASSWORD                1041
+#define EDB_PASSWORD_REPEAT             1042
+#define IDC_STATIC_PASSWORD             1043
+#define IDC_STATIC_PASSWORD_REPEAT      1044
 
 // Next default values for new objects
 // 
